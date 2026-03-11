@@ -247,7 +247,7 @@
     }
 
     function updateTroops(dt) {
-      updateAnim(this, dt, 9);  
+      //updateAnim(this, dt, 9);  
       state.troops.forEach(t => t.update(dt));
       if (state.catchAnim) return;
       for (const troop of state.troops) {
@@ -594,6 +594,7 @@
     updateHud();
 
     requestAnimationFrame(loop);
+
 
 
 
