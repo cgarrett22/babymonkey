@@ -62,23 +62,7 @@
           this.frame = (this.frame + 1) % 4;
         }
       }
-
-      function updateAnim(actor, dt, fps = 8) {
-          const moving = actor.dir.x !== 0 || actor.dir.y !== 0;
         
-          if (!moving) {
-            actor.frame = 0;
-            actor.animTime = 0;
-            return;
-          }
-        
-          actor.animTime += dt;
-        
-          actor.frame =
-            Math.floor(actor.animTime * fps) %
-            actor.frameCount;
-        }  
-
       handleCave() {
         const { c, r } = this.tile;
         const cave = CAVES.find(v => v.c === c && v.r === r);
@@ -226,4 +210,5 @@
         ctx.restore();
       }
     }
+
 
