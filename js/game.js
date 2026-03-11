@@ -206,6 +206,7 @@
     }
 
     function updatePlayer(dt) {
+      updateAnim(this, dt, this.panicking ? 12 : 8);
       handleInput();
       if (state.player.atCenter() && state.player.canMove(state.player.bufferedDir)) {
         state.player.nextDir = { ...state.player.bufferedDir };
@@ -230,6 +231,7 @@
     }
 
     function updateTroops(dt) {
+      updateAnim(this, dt, 9);  
       state.troops.forEach(t => t.update(dt));
       if (state.catchAnim) return;
       for (const troop of state.troops) {
@@ -576,3 +578,4 @@
     updateHud();
 
     requestAnimationFrame(loop);
+
