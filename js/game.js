@@ -137,11 +137,40 @@
 
     function handleInput() {
       if (!state.player) return;
-      if (keys.ArrowUp) state.player.nextDir = { x: 0, y: -1 };
-      else if (keys.ArrowDown) state.player.nextDir = { x: 0, y: 1 };
-      else if (keys.ArrowLeft) state.player.nextDir = { x: -1, y: 0 };
-      else if (keys.ArrowRight) state.player.nextDir = { x: 1, y: 0 };
-      else state.player.nextDir = { x: 0, y: 0 };
+
+      if (keys.ArrowUp) state.player.bufferedDir = { x: 0, y: -1 };
+      else if (keys.ArrowDown) state.player.bufferedDir = { x: 0, y: 1 };
+      else if (keys.ArrowLeft) state.player.bufferedDir = { x: -1, y: 0 };
+      else if (keys.ArrowRight) state.player.bufferedDir = { x: 1, y: 0 };
+    }
+
+    function isIntersection(c, r) {
+      if (!walkable(c, r)) return false;
+
+      let exits = 0;
+      if (walkable(c + 1, r)) exits++;
+      if (walkable(c - 1, r)) exits++;
+      if (walkable(c, r + 1)) exits++;
+      if (walkable(c, r - 1)) exits++;
+
+      return exits >= 3;
+    }
+
+    function drawTurnHints() {
+      ctx.save();
+      ctx.fillStyle = 'rgba(255, 245, 200, 0.18)';
+
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          if (!isIntersection(c, r)) continue;
+          const p = tileCenter(c, r);
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 10, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
+      ctx.restore();
     }
 
     function updateHand(dt) {
@@ -178,6 +207,9 @@
 
     function updatePlayer(dt) {
       handleInput();
+      if (state.player.atCenter() && state.player.canMove(state.player.bufferedDir)) {
+        state.player.nextDir = { ...state.player.bufferedDir };
+      }
       state.player.update(dt);
       if (state.player.movedThisRound && state.roundState === 'waiting' && state.banana?.landed) {
         state.roundState = 'chase';
@@ -267,32 +299,7 @@
     function drawBackground() {
       ctx.drawImage(mountainImage, 0, 0, canvas.width, canvas.height);
     }
-    // function drawBackground() {
-    //   ctx.save();
-    //   ctx.translate(BOARD_X, BOARD_Y);
-
-    //   ctx.fillStyle = '#7aa35e';
-    //   ctx.fillRect(0, 0, BOARD_W, BOARD_H);
-
-    //   for (let r = 0; r < ROWS; r++) {
-    //     for (let c = 0; c < COLS; c++) {
-    //       const x = c * TILE;
-    //       const y = r * TILE;
-    //       const cell = getCell(c, r);
-
-    //       if (cell === '#') {
-    //         drawRockTile(x, y);
-    //       } else {
-    //         drawPathTile(x, y);
-    //       }
-    //     }
-    //   }
-
-    //   drawMotherLedge();
-    //   drawHand();
-    //   ctx.restore();
-    // }
-
+    
     function drawRockTile(x, y) {
       ctx.fillStyle = '#8d745c';
       ctx.fillRect(x, y, TILE, TILE);
@@ -468,24 +475,43 @@
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawBackground();
-      drawPathGuide();
-      drawCaveDebug();
+      // drawPathGuide();
+      // drawCaveDebug();
+      drawCaveHints();
+      drawTurnHints();
       drawPathsOverlay();
       drawBananaState();
       drawActors();
       drawOverlay();
     }
-function drawCaveDebug() {
-  ctx.save();
-  ctx.fillStyle = 'rgba(0, 255, 255, 0.5)';
-  CAVES.forEach(cave => {
-    const p = tileCenter(cave.c, cave.r);
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, 12, 0, Math.PI * 2);
-    ctx.fill();
-  });
-  ctx.restore();
-}
+
+    function drawCaveHints() {
+      ctx.save();
+      CAVES.forEach(cave => {
+        const p = tileCenter(cave.c, cave.r);
+        const grad = ctx.createRadialGradient(p.x, p.y, 2, p.x, p.y, 26);
+        grad.addColorStop(0, 'rgba(255, 180, 80, 0.20)');
+        grad.addColorStop(1, 'rgba(255, 180, 80, 0)');
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 26, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.restore();
+    }
+
+    function drawCaveDebug() {
+      ctx.save();
+      ctx.fillStyle = 'rgba(0, 255, 255, 0.5)';
+      CAVES.forEach(cave => {
+        const p = tileCenter(cave.c, cave.r);
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 12, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.restore();
+    }
+
     function loop(ts) {
       const dt = Math.min((ts - state.lastTime) / 1000, 0.05);
       state.lastTime = ts;

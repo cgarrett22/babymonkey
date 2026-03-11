@@ -48,7 +48,7 @@
       { c:13, r:9, to: { c:3, r:3 } }
     ];
 
-    const SPAWN_TILE = { c: 15, r: 5 };
+    const SPAWN_TILE = { c: 15, r: 1 };
     const HAND_ORIGIN = { x: 26, y: 124 };
 
     const TROOP_SPAWN_TILES = [

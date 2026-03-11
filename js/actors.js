@@ -9,6 +9,7 @@
         this.facing = 'right';
         this.frame = 0;
         this.frameTime = 0;
+        this.bufferedDir = { x: 0, y: 0 };
       }
 
       get tile() { return pointToTile(this.x, this.y); }
@@ -36,7 +37,6 @@
       }
 
       move(dt) {
-        console.log('dir', this.dir, 'nextDir', this.nextDir, 'tile', this.tile, 'canMove', this.canMove(this.nextDir));
         if (this.atCenter()) {
           this.snapToCenter();
           if (this.canMove(this.nextDir)) this.dir = { ...this.nextDir };
