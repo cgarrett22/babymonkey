@@ -8,6 +8,8 @@
         this.nextDir = { x: 0, y: 0 };
         this.facing = 'right';
         this.frame = 0;
+        this.animTime = 0;
+        this.frameCount = 4;
         this.frameTime = 0;
         this.bufferedDir = { x: 0, y: 0 };
       }
@@ -60,6 +62,22 @@
           this.frame = (this.frame + 1) % 4;
         }
       }
+
+      function updateAnim(actor, dt, fps = 8) {
+          const moving = actor.dir.x !== 0 || actor.dir.y !== 0;
+        
+          if (!moving) {
+            actor.frame = 0;
+            actor.animTime = 0;
+            return;
+          }
+        
+          actor.animTime += dt;
+        
+          actor.frame =
+            Math.floor(actor.animTime * fps) %
+            actor.frameCount;
+        }  
 
       handleCave() {
         const { c, r } = this.tile;
@@ -208,3 +226,4 @@
         ctx.restore();
       }
     }
+
