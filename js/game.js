@@ -512,6 +512,42 @@
       ctx.restore();
     }
 
+    function getDirRow(facing) {
+      if (facing === "down") return 0;
+      if (facing === "left") return 1;
+      if (facing === "right") return 1;
+      if (facing === "up") return 2;
+      return 0;
+    }
+
+    function drawSheetFrame(img, frame, facing, frameWidth, frameHeight, drawWidth, drawHeight) {
+    
+      const row = getDirRow(facing);
+    
+      const sx = frame * frameWidth;
+      const sy = row * frameHeight;
+    
+      ctx.save();
+    
+      if (facing === "right") {
+        ctx.scale(-1,1);
+      }
+    
+      ctx.drawImage(
+        img,
+        sx,
+        sy,
+        frameWidth,
+        frameHeight,
+        -drawWidth/2,
+        -drawHeight/2,
+        drawWidth,
+        drawHeight
+      );
+    
+      ctx.restore();
+    }
+
     function loop(ts) {
       const dt = Math.min((ts - state.lastTime) / 1000, 0.05);
       state.lastTime = ts;
@@ -538,4 +574,5 @@
     });
 
     updateHud();
+
     requestAnimationFrame(loop);
