@@ -1,4 +1,5 @@
-    const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
+console.log('Actor check:', typeof Actor, typeof Player, typeof Troop);
+const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
     const SPAWN_POS = tileCenter(SPAWN_TILE.c, SPAWN_TILE.r);
 
     function drawPathGuide() {
@@ -594,6 +595,7 @@
     updateHud();
 
     requestAnimationFrame(loop);
+
 
 
 
