@@ -205,21 +205,21 @@
       }
     }
 
-  function updateAnim(actor, dt, fps = 8) {
-      const moving = actor.dir.x !== 0 || actor.dir.y !== 0;
+//  function updateAnim(actor, dt, fps = 8) {
+//      const moving = actor.dir.x !== 0 || actor.dir.y !== 0;
+//    
+//      if (!moving) {
+//        actor.frame = 0;
+//        actor.animTime = 0;
+//        return;
+//      }
     
-      if (!moving) {
-        actor.frame = 0;
-        actor.animTime = 0;
-        return;
-      }
+//      actor.animTime += dt;
     
-      actor.animTime += dt;
-    
-      actor.frame =
-        Math.floor(actor.animTime * fps) %
-        actor.frameCount;
-    }  
+//      actor.frame =
+//        Math.floor(actor.animTime * fps) %
+//        actor.frameCount;
+//    }  
 
     function updatePlayer(dt) {
       //updateAnim(this, dt, this.panicking ? 12 : 8);
@@ -594,6 +594,7 @@
     updateHud();
 
     requestAnimationFrame(loop);
+
 
 
 
