@@ -1,4 +1,3 @@
-console.log('Actor check:', typeof Actor, typeof Player, typeof Troop);
 const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
     const SPAWN_POS = tileCenter(SPAWN_TILE.c, SPAWN_TILE.r);
 
@@ -206,24 +205,24 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
       }
     }
 
-//  function updateAnim(actor, dt, fps = 8) {
-//      const moving = actor.dir.x !== 0 || actor.dir.y !== 0;
-//    
-//      if (!moving) {
-//        actor.frame = 0;
-//        actor.animTime = 0;
-//        return;
-//      }
+  function updateAnim(actor, dt, fps = 8) {
+      const moving = actor.dir.x !== 0 || actor.dir.y !== 0;
     
-//      actor.animTime += dt;
+      if (!moving) {
+        actor.frame = 0;
+        actor.animTime = 0;
+        return;
+      }
     
-//      actor.frame =
-//        Math.floor(actor.animTime * fps) %
-//        actor.frameCount;
-//    }  
+      actor.animTime += dt;
+    
+      actor.frame =
+        Math.floor(actor.animTime * fps) %
+        actor.frameCount;
+    }  
 
     function updatePlayer(dt) {
-      //updateAnim(this, dt, this.panicking ? 12 : 8);
+      updateAnim(this, dt, this.panicking ? 12 : 8);
       handleInput();
       if (state.player.atCenter() && state.player.canMove(state.player.bufferedDir)) {
         state.player.nextDir = { ...state.player.bufferedDir };
@@ -248,7 +247,7 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
     }
 
     function updateTroops(dt) {
-      //updateAnim(this, dt, 9);  
+      updateAnim(this, dt, 9);  
       state.troops.forEach(t => t.update(dt));
       if (state.catchAnim) return;
       for (const troop of state.troops) {
@@ -595,6 +594,7 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
     updateHud();
 
     requestAnimationFrame(loop);
+
 
 
 
