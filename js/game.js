@@ -222,7 +222,7 @@
     }  
 
     function updatePlayer(dt) {
-      updateAnim(this, dt, this.panicking ? 12 : 8);
+      //updateAnim(this, dt, this.panicking ? 12 : 8);
       handleInput();
       if (state.player.atCenter() && state.player.canMove(state.player.bufferedDir)) {
         state.player.nextDir = { ...state.player.bufferedDir };
@@ -594,5 +594,6 @@
     updateHud();
 
     requestAnimationFrame(loop);
+
 
 
