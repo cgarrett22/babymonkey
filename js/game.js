@@ -1,6 +1,25 @@
 const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
     const SPAWN_POS = tileCenter(SPAWN_TILE.c, SPAWN_TILE.r);
 
+    function loadSprites() {
+      spriteStore.lilJabRun = new Image();
+      spriteStore.lilJabRun.src = 'sprites/jab-sprite.png';
+    
+      spriteStore.troopRun = new Image();
+      spriteStore.troopRun.src = 'sprites/troop-sprite.png';
+    
+      spriteStore.motherOrang = new Image();
+      spriteStore.motherOrang.src = 'sprites/mother-orang.jpg';
+    }
+
+    loadSprites();
+    setTimeout(() => {
+      console.log('jab src:', spriteStore.lilJabRun?.src);
+      console.log('jab loaded:', spriteStore.lilJabRun?.complete);
+      console.log('troop loaded:', spriteStore.troopRun?.complete);
+      console.log('mother loaded:', spriteStore.motherOrang?.complete);
+    }, 1000);
+
     function drawPathGuide() {
       ctx.save();
       ctx.strokeStyle = 'rgba(255, 245, 200, 0.28)';
