@@ -259,10 +259,14 @@ const SPAWN_POS = tileCenter(SPAWN_TILE.c, SPAWN_TILE.r);
     
       handleInput();
     
-      if (state.player.atCenter() && state.player.canMove(state.player.bufferedDir)) {
+      //if (state.player.atCenter() && state.player.canMove(state.player.bufferedDir)) {
+        //state.player.nextDir = { ...state.player.bufferedDir };
+      //}
+
+      if (state.player.canMove(state.player.bufferedDir)) {
         state.player.nextDir = { ...state.player.bufferedDir };
       }
-    
+        
       state.player.update(dt);
       //updateAnim(state.player, dt, 8);
     
