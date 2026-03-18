@@ -58,6 +58,8 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
     }
 
     function newRound() {
+      state.player.frame = 0;
+      state.player.animTime = 0;
       state.roundState = 'waiting';
       state.player.x = SPAWN_POS.x;
       state.player.y = SPAWN_POS.y;
@@ -70,6 +72,8 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
       state.catchAnim = null;
       state.troops.forEach((t, i) => {
         const p = tileCenter(TROOP_SPAWN_TILES[i].c, TROOP_SPAWN_TILES[i].r);
+        t.frame = 0;
+        t.animTime = 0;  
         t.x = p.x;
         t.y = p.y;
         t.dir = { x: 0, y: 0 };
@@ -207,7 +211,7 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
     
       if (!moving) {
         actor.frame = 0;
-        actor.animTime = 0;
+        //actor.animTime = 0;
         return;
       }
     
