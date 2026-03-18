@@ -189,7 +189,7 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
     }
 
     function updateBanana(dt) {
-      if (!state.banana || !state.banana.landed || state.player.hasBanana) return;
+      if (!state.banana || !state.banana.landed || state.player?.hasBanana) return;
       state.banana.age += dt;
       state.banana.size = 1 + Math.sin(state.banana.age * 4) * 0.04;
       const d = distance(state.player, state.banana);
@@ -368,7 +368,7 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
       ctx.fillRect(lx + 12, ly + 76, 204, 12);
 
       ctx.translate(MOTHER_LEDGE.x - BOARD_X, MOTHER_LEDGE.y - BOARD_Y);
-      if (spriteStore.motherOrang) {
+      if (spriteStore.motherOrang?.complete) {
         ctx.drawImage(spriteStore.motherOrang, -42, -42, 84, 84);
       } else {
         ctx.fillStyle = '#d19d53';
