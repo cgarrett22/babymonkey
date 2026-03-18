@@ -115,36 +115,26 @@
       updateAnim(this, dt, this.panicking ? 8 : 6);
     }
         
-      draw() {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        if (spriteStore.lilJabRun?.complete) {
-          drawSheetFrame(spriteStore.lilJabRun, this.frame, this.facing, 64, 64, 72, 72);
-        } else {
-          ctx.scale(this.facing === 'left' ? -1 : 1, 1);
-          ctx.fillStyle = '#b98b57';
+    draw() {
+      ctx.save();
+      ctx.translate(this.x, this.y);
+    
+      if (spriteStore.lilJabRun?.complete && spriteStore.lilJabRun.naturalWidth > 0) {
+        drawSheetFrame(spriteStore.lilJabRun, this.frame, this.facing, 64, 64, 72, 72);
+    
+        if (this.hasBanana) drawBanana(12, -18, 0.9);
+    
+        if (this.panicking) {
+          ctx.fillStyle = '#7dd3fc';
           ctx.beginPath();
-          ctx.arc(0, 0, 22, 0, Math.PI * 2);
+          ctx.arc(-12, -18, 4, 0, Math.PI * 2);
           ctx.fill();
-          ctx.fillStyle = '#f6d6b6';
-          ctx.beginPath();
-          ctx.arc(4, 0, 12, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = '#2d221a';
-          ctx.fillRect(6, -2, 3, 3);
-          ctx.fillRect(13, -2, 3, 3);
-          if (this.hasBanana) drawBanana(12, -18, 0.9);
-          if (this.panicking) {
-            ctx.fillStyle = '#7dd3fc';
-            ctx.beginPath();
-            ctx.arc(-12, -18, 4, 0, Math.PI * 2);
-            ctx.fill();
-          }
         }
-        ctx.restore();
       }
+    
+      ctx.restore();
     }
-
+        
     class Troop extends Actor {
       constructor(x, y, color) {
         super(x, y, 132);
@@ -212,33 +202,15 @@
       }
 
       draw() {
-        ctx.save();
-        ctx.translate(this.x, this.y);
-        if (spriteStore.troopRun?.complete) {
-          drawSheetFrame(spriteStore.troopRun, this.frame, this.facing, 64, 64, 74, 74);
-        } else {
-          ctx.scale(this.facing === 'left' ? -1 : 1, 1);
-          ctx.fillStyle = this.color;
-          ctx.beginPath();
-          ctx.arc(0, 0, 23, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = '#f6dfc9';
-          ctx.beginPath();
-          ctx.arc(4, 0, 12, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = '#fff';
-          ctx.beginPath();
-          ctx.arc(6, -5, 5, 0, Math.PI * 2);
-          ctx.arc(16, -5, 5, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.fillStyle = '#ef4444';
-          ctx.beginPath();
-          ctx.arc(8, -5, 2, 0, Math.PI * 2);
-          ctx.arc(17, -5, 2, 0, Math.PI * 2);
-          ctx.fill();
+          ctx.save();
+          ctx.translate(this.x, this.y);
+        
+          if (spriteStore.troopRun?.complete && spriteStore.troopRun.naturalWidth > 0) {
+            drawSheetFrame(spriteStore.troopRun, this.frame, this.facing, 64, 64, 74, 74);
+          }
+        
+          ctx.restore();
         }
-        ctx.restore();
-      }
     }
 
 
