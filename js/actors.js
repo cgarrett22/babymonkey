@@ -48,7 +48,9 @@
 
         this.x += this.dir.x * this.speed * dt;
         this.y += this.dir.y * this.speed * dt;
-
+        this.x = Math.max(BOARD_X + TILE / 2, Math.min(this.x, BOARD_X + BOARD_W - TILE / 2));
+        this.y = Math.max(BOARD_Y + TILE / 2, Math.min(this.y, BOARD_Y + BOARD_H - TILE / 2));
+          
         if (Math.abs(this.dir.x) > 0 || Math.abs(this.dir.y) > 0) {
           if (this.dir.x > 0) this.facing = 'right';
           if (this.dir.x < 0) this.facing = 'left';
