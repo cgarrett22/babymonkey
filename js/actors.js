@@ -88,18 +88,7 @@
         if (this.dir.y > 0) this.facing = 'down';
         if (this.dir.y < 0) this.facing = 'up';
       }
-    }        
-      handleCave() {
-        const { c, r } = this.tile;
-        const cave = CAVES.find(v => v.c === c && v.r === r);
-        if (cave) {
-          const exit = tileCenter(cave.to.c, cave.to.r);
-          this.x = exit.x;
-          this.y = exit.y;
-        }
-      }
     }
-
     class Player extends Actor {
       constructor(x, y) {
         super(x, y, 175);
