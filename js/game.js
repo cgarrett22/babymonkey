@@ -1,6 +1,21 @@
 const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
     const SPAWN_POS = tileCenter(SPAWN_TILE.c, SPAWN_TILE.r);
 
+// Sprite storage
+const spriteStore = {};
+
+    // Load sprites
+    function loadSprites() {
+      spriteStore.lilJabRun = new Image();
+      spriteStore.lilJabRun.src = 'sprites/jab-sprite.png';
+    
+      spriteStore.troopRun = new Image();
+      spriteStore.troopRun.src = 'sprites/troop-sprite.png';
+    
+      //spriteStore.motherOrang = new Image();
+      //spriteStore.motherOrang.src = 'assets/mother-orang.jpg';
+    }
+
     function drawPathGuide() {
       ctx.save();
       ctx.strokeStyle = 'rgba(255, 245, 200, 0.28)';
@@ -586,6 +601,7 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
       state.lastTime = ts;
       update(dt || 0);
       draw();
+        loadSprites();
       requestAnimationFrame(loop);
     }
 
