@@ -38,14 +38,40 @@
         return walkable(c + dir.x, r + dir.y);
       }
 
-      move(dt) {
-        if (this.atCenter()) {
-          this.snapToCenter();
-          if (this.canMove(this.nextDir)) this.dir = { ...this.nextDir };
-          if (!this.canMove(this.dir)) this.dir = { x: 0, y: 0 };
-          this.handleCave();
+    move(dt) {
+      const step = this.speed * dt;
+      const center = this.centerOfTile();
+    
+      const closeToCenter =
+        Math.abs(this.x - center.x) <= step &&
+        Math.abs(this.y - center.y) <= step;
+    
+      if (closeToCenter) {
+        this.x = center.x;
+        this.y = center.y;
+    
+        if (this.canMove(this.nextDir)) {
+          this.dir = { ...this.nextDir };
         }
-
+    
+        if (!this.canMove(this.dir)) {
+          this.dir = { x: 0, y: 0 };
+        }
+    
+        this.handleCave();
+      }
+    
+      this.x += this.dir.x * step;
+      this.y += this.dir.y * step;
+    
+      if (Math.abs(this.dir.x) > 0 || Math.abs(this.dir.y) > 0) {
+        if (this.dir.x > 0) this.facing = 'right';
+        if (this.dir.x < 0) this.facing = 'left';
+        if (this.dir.y > 0) this.facing = 'down';
+        if (this.dir.y < 0) this.facing = 'up';
+      }
+    }
+        
         this.x += this.dir.x * this.speed * dt;
         this.y += this.dir.y * this.speed * dt;
         this.x = Math.max(BOARD_X + TILE / 2, Math.min(this.x, BOARD_X + BOARD_W - TILE / 2));
