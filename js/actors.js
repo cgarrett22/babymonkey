@@ -134,7 +134,8 @@
     
       ctx.restore();
     }
-        
+    }
+
     class Troop extends Actor {
       constructor(x, y, color) {
         super(x, y, 132);
