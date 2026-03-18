@@ -20,6 +20,13 @@ const sounds = {};
       ? 'Tap to start the banana incident.'
       : 'Lil\' Jab got tossed. Tap to try again.';
 
+    function sizeApp() {
+      document.documentElement.style.setProperty('--app-height', `${window.innerHeight}px`);
+    }
+
+    window.addEventListener('resize', sizeApp);
+    window.addEventListener('orientationchange', sizeApp);
+    sizeApp();    
 
       
     let touchStart = null;
@@ -69,6 +76,7 @@ const sounds = {};
     canvas.addEventListener('click', () => {
       beginGame();
     });
+
 
     let musicStarted = false;
 
@@ -676,9 +684,9 @@ const sounds = {};
       ctx.fillText('Baby Monkey Feeding Time', canvas.width / 2, canvas.height / 2 - 40);
       ctx.font = '20px Arial';
       const line = state.mode === 'start'
-        ? 'Press Space to start the banana incident.'
-        : 'Lil\' Jab was tossed too many times. Press Space.';
-      ctx.fillText(line, canvas.width / 2, canvas.height / 2 + 8);
+        ? 'Tap to start the banana incident.'
+        : 'Lil\' Jab was tossed too many times. Tap to try again.';
+        ctx.fillText(line, canvas.width / 2, canvas.height / 2 + 8);
       ctx.font = '16px Arial';
       ctx.fillStyle = '#fde68a';
       ctx.fillText('Human detected. Banana etiquette unacceptable.', canvas.width / 2, canvas.height / 2 + 42);
@@ -688,16 +696,12 @@ const sounds = {};
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawBackground();
-      drawHudOverlay();
-      // drawCaveDebug();
-      // drawPathGuide();
-      // drawPathsOverlay();
       drawCaveHints();
       drawTurnHints();
       drawBananaState();
       drawActors();
       drawHand();
-      //drawMotherLedge();
+      drawMotherLedge();
       drawHudOverlay();
       drawOverlay();
     }

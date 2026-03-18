@@ -2,28 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Baby Monkey Feeding Time</title>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">  <title>Baby Monkey Feeding Time</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <style>
-* { box-sizing: border-box; }
+:root {
+  --bg: #8ec5ff;
+  --sky2: #dff3ff;
+  --rock: #8d745c;
+  --rock-dark: #6c5847;
+  --path: #d8c29e;
+  --grass: #7ba35a;
+  --ui: rgba(17, 24, 39, 0.84);
+  --ui-border: rgba(255,255,255,0.1);
+  --text: #f8fafc;
+  --banana: #ffd84a;
+  --danger: #ef4444;
+  --safe: #22c55e;
+  --heart: #ff5c8a;
+  --app-height: 100vh;
+}
+
+* {
+  box-sizing: border-box;
+}
 
 html, body {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
+  height: var(--app-height);
   overflow: hidden;
 }
 
 body {
   display: grid;
   place-items: center;
-  min-height: 100vh;
-  min-height: 100dvh;
+  min-height: var(--app-height);
   background: linear-gradient(180deg, var(--sky2), var(--bg));
   font-family: Arial, Helvetica, sans-serif;
   color: var(--text);
@@ -33,118 +49,42 @@ body {
 }
 
 .wrap {
-  width: min(96vw, 1180px);
-  display: grid;
-  gap: 12px;
-  padding: 14px;
+  width: 100vw;
+  width: 100dvw;
+  padding: 0;
+  gap: 0;
+  margin: 0;
 }
 
-.hud {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-  background: var(--ui);
-  border: 1px solid var(--ui-border);
-  border-radius: 16px;
-  padding: 12px 14px;
+.hud,
+.notes {
+  display: none !important;
 }
 
-.left, .right {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
+.left,
+.right,
+.pill,
+.status,
+code {
+  display: none;
 }
-
-.pill {
-  background: rgba(255,255,255,0.08);
-  padding: 7px 11px;
-  border-radius: 999px;
-  font-size: 14px;
-}
-
-.status.safe { color: #bbf7d0; }
-.status.danger { color: #fecaca; }
 
 canvas {
   display: block;
-  width: 100%;
+  width: 100vw;
+  width: 100dvw;
   height: auto;
-  max-width: 100%;
-  border-radius: 18px;
+  max-width: 100vw;
+  max-width: 100dvw;
+  max-height: var(--app-height);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
   background: linear-gradient(180deg, #bfe6ff 0%, #d7f3ff 40%, #bce0a7 100%);
-  border: 1px solid rgba(0,0,0,0.12);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.18);
   touch-action: none;
   -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
-}
-
-.notes {
-  background: var(--ui);
-  border: 1px solid var(--ui-border);
-  border-radius: 16px;
-  padding: 12px 14px;
-  line-height: 1.45;
-  font-size: 14px;
-}
-
-code {
-  color: #fde68a;
-}
-
-@media (max-width: 768px) {
-  .hud,
-  .notes {
-    display: none;
-  }
-
-  .wrap {
-    width: 100vw;
-    width: 100dvw;
-    padding: 0;
-    gap: 0;
-    margin: 0;
-  }
-
-  canvas {
-    width: 100vw;
-    width: 100dvw;
-    height: auto;
-    max-height: 100vh;
-    max-height: 100dvh;
-    border-radius: 0;
-    border: 0;
-    box-shadow: none;
-  }
-
-  canvas {
-    display: block;
-    width: 100vw;
-    width: 100dvw;
-    height: auto;
-    max-height: 100vh;
-    max-height: 100dvh;
-    border-radius: 0;
-    border: 0;
-    box-shadow: none;
-  }
-
-  .hud,
-  .notes {
-    display: none !important;
-  }
-
-  .wrap {
-    width: 100vw;
-    width: 100dvw;
-    padding: 0;
-    gap: 0;
-    margin: 0;
-  }
-
 }
   </style>
 </head>
