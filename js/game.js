@@ -239,7 +239,7 @@ const SPAWN_POS = tileCenter(SPAWN_TILE.c, SPAWN_TILE.r);
 //    }  
 
 
-    function updateAnim(actor, dt, fps = 2) {
+    function updateAnim(actor, dt, fps = 4) {
       if (!actor || !actor.dir) return;
     
       const moving = actor.dir.x !== 0 || actor.dir.y !== 0;
