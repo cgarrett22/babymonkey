@@ -223,20 +223,26 @@ const SPAWN_POS = tileCenter(SPAWN_TILE.c, SPAWN_TILE.r);
       }
     }
 
-    function updateAnim(actor, dt, fps = 8) {
-      if (!actor || !actor.dir) return;
+//    function updateAnim(actor, dt, fps = 8) {
+//      if (!actor || !actor.dir) return;
     
-      const moving = actor.dir.x !== 0 || actor.dir.y !== 0;
+//      const moving = actor.dir.x !== 0 || actor.dir.y !== 0;
     
-      if (!moving) {
-        actor.frame = 0;
+//      if (!moving) {
+//        actor.frame = 0;
         //actor.animTime = 0;
-        return;
-      }
+//        return;
+//      }
     
-      actor.animTime += dt;
-      actor.frame = Math.floor(actor.animTime * fps) % (actor.frameCount || 4);
-    }  
+//      actor.animTime += dt;
+//      actor.frame = Math.floor(actor.animTime * fps) % (actor.frameCount || 4);
+//    }  
+
+
+    function updateAnim(actor, dt, fps = 8) {
+      if (!actor) return;
+      actor.frame = 0;
+    }
 
     function updatePlayer(dt) {
       if (!state.player) return;
