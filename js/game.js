@@ -16,6 +16,18 @@ const sounds = {};
 
     loadSounds();
 
+    const grad = ctx.createLinearGradient(0, 0, 0, 60);
+    grad.addColorStop(0, 'rgba(0,0,0,0.6)');
+    grad.addColorStop(1, 'rgba(0,0,0,0.0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, 60);
+
+    const line = state.mode === 'start'
+      ? 'Tap to start the banana incident.'
+      : 'Lil\' Jab got tossed. Tap to try again.';
+
+
+      
     let touchStart = null;
     let swipeHandled = false;
     const SWIPE_THRESHOLD = 24;
@@ -133,6 +145,49 @@ const sounds = {};
 
       ctx.restore();
     } 
+
+
+    function drawHudOverlay() {
+      const padding = 16;
+
+      ctx.save();
+
+      // Soft background bar (top)
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+      ctx.fillRect(0, 0, canvas.width, 60);
+
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 18px sans-serif';
+      ctx.textBaseline = 'middle';
+
+      // Left: Score
+      ctx.textAlign = 'left';
+      ctx.fillText(`Score: ${state.score}`, padding, 30);
+
+      // Center: Status
+      ctx.textAlign = 'center';
+
+      let status = '';
+      if (state.mode === 'start') {
+        status = 'Tap to Start';
+      } else if (state.mode === 'gameOver') {
+        status = 'Tap to Restart';
+      } else if (!state.banana?.landed) {
+        status = 'Incoming banana...';
+      } else if (state.player?.hasBanana) {
+        status = 'Return to Mother Orang!';
+      } else {
+        status = ripenessLabel(state.banana.age).label;
+      }
+
+      ctx.fillText(status, canvas.width / 2, 30);
+
+      // Right: Lives
+      ctx.textAlign = 'right';
+      ctx.fillText(`Lives: ${state.lives}`, canvas.width - padding, 30);
+
+      ctx.restore();
+    }
 
     function resetActors() {
       state.player = new Player(SPAWN_POS.x, SPAWN_POS.y);
@@ -645,6 +700,7 @@ const sounds = {};
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawBackground();
+      drawHudOverlay();
       // drawCaveDebug();
       // drawPathGuide();
       // drawPathsOverlay();
