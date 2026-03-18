@@ -10,7 +10,7 @@
         this.frame = 0;
         this.animTime = 0;
         this.frameCount = 4;
-        this.frameTime = 0;
+        //this.frameTime = 0;
         this.bufferedDir = { x: 0, y: 0 };
       }
 
@@ -55,12 +55,6 @@
           if (this.dir.y > 0) this.facing = 'down';
           if (this.dir.y < 0) this.facing = 'up';
         }
-
-        this.frameTime += dt;
-        if (this.frameTime > 0.12) {
-          this.frameTime = 0;
-          this.frame = (this.frame + 1) % 4;
-        }
       }
         
       handleCave() {
@@ -94,7 +88,7 @@
       draw() {
         ctx.save();
         ctx.translate(this.x, this.y);
-        if (spriteStore.lilJabRun) {
+        if (spriteStore.lilJabRun?.complete) {
           drawSheetFrame(spriteStore.lilJabRun, this.frame, this.facing, 64, 64, 72, 72);
         } else {
           ctx.scale(this.facing === 'left' ? -1 : 1, 1);
@@ -172,6 +166,10 @@
         }
 
         const target = state.player;
+        if (!target) {
+          this.nextDir = choose(usable);
+          return;
+        }
         usable.sort((a, b) => {
           const da = pathBias(this, a, target);
           const db = pathBias(this, b, target);
@@ -186,7 +184,7 @@
       draw() {
         ctx.save();
         ctx.translate(this.x, this.y);
-        if (spriteStore.troopRun) {
+        if (spriteStore.troopRun?.complete) {
           drawSheetFrame(spriteStore.troopRun, this.frame, this.facing, 64, 64, 74, 74);
         } else {
           ctx.scale(this.facing === 'left' ? -1 : 1, 1);
