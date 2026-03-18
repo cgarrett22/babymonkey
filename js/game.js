@@ -16,49 +16,49 @@ const sounds = {};
 
     loadSounds();
 
-let touchStart = null;
-let swipeHandled = false;
-const SWIPE_THRESHOLD = 30;
+    let touchStart = null;
+    let swipeHandled = false;
+    const SWIPE_THRESHOLD = 24;
 
-canvas.addEventListener('pointerdown', (e) => {
-  e.preventDefault();
+    canvas.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      beginGame();
+      touchStart = { x: e.clientX, y: e.clientY };
+      swipeHandled = false;
+    }, { passive: false });
 
-  beginGame();
+    canvas.addEventListener('pointermove', (e) => {
+      if (!touchStart || swipeHandled || !state.player) return;
 
-    touchStart = { x: e.clientX, y: e.clientY };
-    swipeHandled = false;
-  }, { passive: false });
+      e.preventDefault();
 
-  canvas.addEventListener('pointermove', (e) => {
-    if (!touchStart || swipeHandled || !state.player) return;
+      const dx = e.clientX - touchStart.x;
+      const dy = e.clientY - touchStart.y;
 
-    const dx = e.clientX - touchStart.x;
-    const dy = e.clientY - touchStart.y;
+      if (Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD) return;
 
-    if (Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD) return;
+      if (Math.abs(dx) > Math.abs(dy)) {
+        state.player.bufferedDir = dx > 0
+          ? { x: 1, y: 0 }
+          : { x: -1, y: 0 };
+      } else {
+        state.player.bufferedDir = dy > 0
+          ? { x: 0, y: 1 }
+          : { x: 0, y: -1 };
+      }
 
-    if (Math.abs(dx) > Math.abs(dy)) {
-      state.player.bufferedDir = dx > 0
-        ? { x: 1, y: 0 }
-        : { x: -1, y: 0 };
-    } else {
-      state.player.bufferedDir = dy > 0
-        ? { x: 0, y: 1 }
-        : { x: 0, y: -1 };
-    }
+      swipeHandled = true;
+    }, { passive: false });
 
-    swipeHandled = true;
-  }, { passive: true });
+    canvas.addEventListener('pointerup', () => {
+      touchStart = null;
+      swipeHandled = false;
+    }, { passive: true });
 
-  canvas.addEventListener('pointerup', () => {
-    touchStart = null;
-    swipeHandled = false;
-  });
-
-  canvas.addEventListener('pointercancel', () => {
-    touchStart = null;
-    swipeHandled = false;
-  });
+    canvas.addEventListener('pointercancel', () => {
+      touchStart = null;
+      swipeHandled = false;
+    }, { passive: true });
 
     canvas.addEventListener('click', () => {
       beginGame();

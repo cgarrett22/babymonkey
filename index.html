@@ -32,6 +32,25 @@
       color: var(--text);
     }
 
+    html, body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  height: 100%;
+}
+
+body {
+  touch-action: none;
+  overscroll-behavior: none;
+}
+
+canvas {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
     .wrap {
       width: min(96vw, 1180px);
       display: grid;
@@ -86,6 +105,34 @@
     }
 
     code { color: #fde68a; }
+
+    @media (max-width: 768px) {
+  .hud {
+    padding: 8px 10px;
+    font-size: 12px;
+    gap: 8px;
+  }
+
+  .pill {
+    padding: 5px 8px;
+    font-size: 12px;
+  }
+
+  .notes {
+    display: none;
+  }
+
+  .wrap {
+    width: 100vw;
+    padding: 6px;
+    gap: 6px;
+  }
+
+  canvas {
+    width: 100vw;
+    max-height: calc(100vh - 70px);
+  }
+}
   </style>
 </head>
 <body>
