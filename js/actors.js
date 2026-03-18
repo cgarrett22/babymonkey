@@ -10,86 +10,94 @@
         this.frame = 0;
         this.animTime = 0;
         this.frameCount = 4;
-        //this.frameTime = 0;
         this.bufferedDir = { x: 0, y: 0 };
       }
-
-      get tile() { return pointToTile(this.x, this.y); }
-
+    
+      get tile() {
+        return pointToTile(this.x, this.y);
+      }
+    
       centerOfTile() {
         const { c, r } = this.tile;
         return tileCenter(c, r);
       }
-
+    
       atCenter() {
         const center = this.centerOfTile();
         return Math.abs(this.x - center.x) < 0.5 && Math.abs(this.y - center.y) < 0.5;
       }
-
+    
       snapToCenter() {
         const center = this.centerOfTile();
         this.x = center.x;
         this.y = center.y;
       }
-
+    
       canMove(dir) {
         if (dir.x === 0 && dir.y === 0) return true;
         const { c, r } = this.tile;
         return walkable(c + dir.x, r + dir.y);
       }
-
-    move(dt) {
-      const step = this.speed * dt;
     
-      // Current tile center
-      let center = this.centerOfTile();
+      move(dt) {
+        const step = this.speed * dt;
     
-      // Lock actor to the lane while moving
-      if (this.dir.x !== 0) {
-        this.y = center.y;
-      }
-      if (this.dir.y !== 0) {
-        this.x = center.x;
-      }
+        let center = this.centerOfTile();
     
-      center = this.centerOfTile();
-    
-      // If close enough to tile center, snap exactly and decide turns
-      const nearCenter =
-        Math.abs(this.x - center.x) <= step &&
-        Math.abs(this.y - center.y) <= step;
-    
-      if (nearCenter) {
-        this.x = center.x;
-        this.y = center.y;
-    
-        if (this.canMove(this.nextDir)) {
-          this.dir = { ...this.nextDir };
+        if (this.dir.x !== 0) {
+          this.y = center.y;
+        }
+        if (this.dir.y !== 0) {
+          this.x = center.x;
         }
     
-        if (!this.canMove(this.dir)) {
-          this.dir = { x: 0, y: 0 };
-        }
-    
-        this.handleCave();
         center = this.centerOfTile();
+    
+        const nearCenter =
+          Math.abs(this.x - center.x) <= step &&
+          Math.abs(this.y - center.y) <= step;
+    
+        if (nearCenter) {
+          this.x = center.x;
+          this.y = center.y;
+    
+          if (this.canMove(this.nextDir)) {
+            this.dir = { ...this.nextDir };
+          }
+    
+          if (!this.canMove(this.dir)) {
+            this.dir = { x: 0, y: 0 };
+          }
+    
+          this.handleCave();
+          center = this.centerOfTile();
+        }
+    
+        this.x += this.dir.x * step;
+        this.y += this.dir.y * step;
+    
+        this.x = Math.max(BOARD_X + TILE / 2, Math.min(this.x, BOARD_X + BOARD_W - TILE / 2));
+        this.y = Math.max(BOARD_Y + TILE / 2, Math.min(this.y, BOARD_Y + BOARD_H - TILE / 2));
+    
+        if (Math.abs(this.dir.x) > 0 || Math.abs(this.dir.y) > 0) {
+          if (this.dir.x > 0) this.facing = 'right';
+          if (this.dir.x < 0) this.facing = 'left';
+          if (this.dir.y > 0) this.facing = 'down';
+          if (this.dir.y < 0) this.facing = 'up';
+        }
       }
     
-      this.x += this.dir.x * step;
-      this.y += this.dir.y * step;
-    
-      // Hard clamp to playable board
-      this.x = Math.max(BOARD_X + TILE / 2, Math.min(this.x, BOARD_X + BOARD_W - TILE / 2));
-      this.y = Math.max(BOARD_Y + TILE / 2, Math.min(this.y, BOARD_Y + BOARD_H - TILE / 2));
-    
-      if (Math.abs(this.dir.x) > 0 || Math.abs(this.dir.y) > 0) {
-        if (this.dir.x > 0) this.facing = 'right';
-        if (this.dir.x < 0) this.facing = 'left';
-        if (this.dir.y > 0) this.facing = 'down';
-        if (this.dir.y < 0) this.facing = 'up';
+      handleCave() {
+        const { c, r } = this.tile;
+        const cave = CAVES.find(v => v.c === c && v.r === r);
+        if (cave) {
+          const exit = tileCenter(cave.to.c, cave.to.r);
+          this.x = exit.x;
+          this.y = exit.y;
+        }
       }
-    }
-        
+    }        
+
     class Player extends Actor {
       constructor(x, y) {
         super(x, y, 175);
