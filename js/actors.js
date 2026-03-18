@@ -40,13 +40,26 @@
 
     move(dt) {
       const step = this.speed * dt;
-      const center = this.centerOfTile();
     
-      const closeToCenter =
+      // Current tile center
+      let center = this.centerOfTile();
+    
+      // Lock actor to the lane while moving
+      if (this.dir.x !== 0) {
+        this.y = center.y;
+      }
+      if (this.dir.y !== 0) {
+        this.x = center.x;
+      }
+    
+      center = this.centerOfTile();
+    
+      // If close enough to tile center, snap exactly and decide turns
+      const nearCenter =
         Math.abs(this.x - center.x) <= step &&
         Math.abs(this.y - center.y) <= step;
     
-      if (closeToCenter) {
+      if (nearCenter) {
         this.x = center.x;
         this.y = center.y;
     
@@ -59,10 +72,15 @@
         }
     
         this.handleCave();
+        center = this.centerOfTile();
       }
     
       this.x += this.dir.x * step;
       this.y += this.dir.y * step;
+    
+      // Hard clamp to playable board
+      this.x = Math.max(BOARD_X + TILE / 2, Math.min(this.x, BOARD_X + BOARD_W - TILE / 2));
+      this.y = Math.max(BOARD_Y + TILE / 2, Math.min(this.y, BOARD_Y + BOARD_H - TILE / 2));
     
       if (Math.abs(this.dir.x) > 0 || Math.abs(this.dir.y) > 0) {
         if (this.dir.x > 0) this.facing = 'right';
@@ -70,21 +88,7 @@
         if (this.dir.y > 0) this.facing = 'down';
         if (this.dir.y < 0) this.facing = 'up';
       }
-    }
-        
-        this.x += this.dir.x * this.speed * dt;
-        this.y += this.dir.y * this.speed * dt;
-        this.x = Math.max(BOARD_X + TILE / 2, Math.min(this.x, BOARD_X + BOARD_W - TILE / 2));
-        this.y = Math.max(BOARD_Y + TILE / 2, Math.min(this.y, BOARD_Y + BOARD_H - TILE / 2));
-          
-        if (Math.abs(this.dir.x) > 0 || Math.abs(this.dir.y) > 0) {
-          if (this.dir.x > 0) this.facing = 'right';
-          if (this.dir.x < 0) this.facing = 'left';
-          if (this.dir.y > 0) this.facing = 'down';
-          if (this.dir.y < 0) this.facing = 'up';
-        }
-      }
-        
+    }        
       handleCave() {
         const { c, r } = this.tile;
         const cave = CAVES.find(v => v.c === c && v.r === r);
