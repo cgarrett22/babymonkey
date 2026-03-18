@@ -239,7 +239,7 @@ const SPAWN_POS = tileCenter(SPAWN_TILE.c, SPAWN_TILE.r);
 //    }  
 
 
-    function updateAnim(actor, dt, fps = 8) {
+    function updateAnim(actor, dt, fps = 12) {
       if (!actor || !actor.dir) return;
     
       const moving = actor.dir.x !== 0 || actor.dir.y !== 0;
@@ -666,6 +666,7 @@ const SPAWN_POS = tileCenter(SPAWN_TILE.c, SPAWN_TILE.r);
     updateHud();
 
     requestAnimationFrame(loop);
+
 
 
 
