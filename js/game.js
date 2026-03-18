@@ -530,7 +530,7 @@ const spriteStore = {};
       drawBananaState();
       drawActors();
       drawHand();
-      drawMotherLedge();
+      //drawMotherLedge();
       drawOverlay();
     }
 
