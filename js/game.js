@@ -35,13 +35,6 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
       ctx.restore();
     } 
 
-    function drawSpriteFrame(img, frame, facing, w, h) {
-      const dirRow = { down: 0, left: 1, right: 2, up: 3 }[facing] ?? 2;
-      const fw = img.width / 4;
-      const fh = img.height / 4;
-      ctx.drawImage(img, frame * fw, dirRow * fh, fw, fh, -w / 2, -h / 2, w, h);
-    }
-
     function resetActors() {
       state.player = new Player(SPAWN_POS.x, SPAWN_POS.y);
       state.player.snapToCenter();
@@ -70,6 +63,7 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
       state.player.y = SPAWN_POS.y;
       state.player.dir = { x: 0, y: 0 };
       state.player.nextDir = { x: 0, y: 0 };
+      state.player.bufferedDir = { x: 0, y: 0 };
       state.player.hasBanana = false;
       state.player.panicking = false;
       state.player.movedThisRound = false;
@@ -80,6 +74,7 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
         t.y = p.y;
         t.dir = { x: 0, y: 0 };
         t.nextDir = { x: 0, y: 0 };
+        t.bufferedDir = { x: 0, y: 0 };
       });
       tossBanana();
     }
@@ -112,7 +107,7 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
 
       if (!state.banana || !state.banana.landed) {
         ripenessEl.textContent = 'airborne';
-      } else if (state.player.hasBanana) {
+      } else if (state.player?.hasBanana) {
         ripenessEl.textContent = 'secured';
       } else {
         ripenessEl.textContent = ripenessLabel(state.banana.age).label;
@@ -221,16 +216,21 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
     }  
 
     function updatePlayer(dt) {
-      updateAnim(state.player, dt, 8);
+      if (!state.player) return;
+    
       handleInput();
+    
       if (state.player.atCenter() && state.player.canMove(state.player.bufferedDir)) {
         state.player.nextDir = { ...state.player.bufferedDir };
       }
+    
       state.player.update(dt);
+      updateAnim(state.player, dt, 8);
+    
       if (state.player.movedThisRound && state.roundState === 'waiting' && state.banana?.landed) {
         state.roundState = 'chase';
       }
-
+    
       if (state.player.hasBanana) {
         const dx = state.player.x - SPAWN_POS.x;
         const dy = state.player.y - SPAWN_POS.y;
@@ -246,9 +246,13 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
     }
 
     function updateTroops(dt) {
-      updateAnim(this, dt, 9);  
-      state.troops.forEach(t => t.update(dt));
+      state.troops.forEach(t => {
+        t.update(dt);
+        updateAnim(t, dt, 9);
+      });
+    
       if (state.catchAnim) return;
+    
       for (const troop of state.troops) {
         if (distance(state.player, troop) < 34) {
           startCatch(troop);
@@ -303,15 +307,22 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
 
     function update(dt) {
       if (state.mode !== 'playing') return;
+    
       updateHand(dt);
       updateBanana(dt);
-      if (!state.catchAnim) updatePlayer(dt);
-      updateTroops(dt);
+    
+      if (!state.catchAnim) {
+        updatePlayer(dt);
+      }
+    
+      if (state.player) {
+        updateTroops(dt);
+      }
+    
       updateCatch(dt);
       updateParticles(dt);
       updateHud();
     }
-
 
     function drawBackground() {
       ctx.drawImage(mountainImage, 0, 0, canvas.width, canvas.height);
@@ -494,11 +505,13 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
       drawBackground();
       // drawPathGuide();
       // drawCaveDebug();
+      // drawPathsOverlay();
       drawCaveHints();
       drawTurnHints();
-      drawPathsOverlay();
       drawBananaState();
       drawActors();
+      drawHand();
+      drawMotherLedge();
       drawOverlay();
     }
 
@@ -530,24 +543,24 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
     }
 
     function getDirRow(facing) {
-      if (facing === "down") return 0;
-      if (facing === "left") return 1;
-      if (facing === "right") return 1;
-      if (facing === "up") return 2;
+      if (facing === 'down') return 0;
+      if (facing === 'left') return 1;
+      if (facing === 'right') return 1;
+      if (facing === 'up') return 2;
       return 0;
     }
-
+    
     function drawSheetFrame(img, frame, facing, frameWidth, frameHeight, drawWidth, drawHeight) {
+      if (!img || !img.complete) return;
     
       const row = getDirRow(facing);
-    
       const sx = frame * frameWidth;
       const sy = row * frameHeight;
     
       ctx.save();
     
-      if (facing === "right") {
-        ctx.scale(-1,1);
+      if (facing === 'right') {
+        ctx.scale(-1, 1);
       }
     
       ctx.drawImage(
@@ -556,15 +569,14 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
         sy,
         frameWidth,
         frameHeight,
-        -drawWidth/2,
-        -drawHeight/2,
+        -drawWidth / 2,
+        -drawHeight / 2,
         drawWidth,
         drawHeight
       );
     
       ctx.restore();
     }
-
     function loop(ts) {
       const dt = Math.min((ts - state.lastTime) / 1000, 0.05);
       state.lastTime = ts;
