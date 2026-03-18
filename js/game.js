@@ -258,7 +258,21 @@ const SPAWN_POS = tileCenter(SPAWN_TILE.c, SPAWN_TILE.r);
       if (!state.player) return;
     
       handleInput();
+
+      const dir = state.player.dir;
+      const buf = state.player.bufferedDir;
+        
+      const isReverse =
+        (dir.x !== 0 && buf.x === -dir.x) ||
+        (dir.y !== 0 && buf.y === -dir.y);
     
+      if (isReverse) {
+        state.player.dir = { ...buf };
+        state.player.nextDir = { ...buf };
+      } else if (state.player.canMove(buf)) {
+        state.player.nextDir = { ...buf };
+      }
+        
       //if (state.player.atCenter() && state.player.canMove(state.player.bufferedDir)) {
         //state.player.nextDir = { ...state.player.bufferedDir };
       //}
