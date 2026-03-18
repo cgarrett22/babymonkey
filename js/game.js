@@ -142,50 +142,37 @@ const sounds = {};
 
 
     function drawHudOverlay() {
-      const padding = 16;
+      const pad = 16;
+      const h = 54;
 
       ctx.save();
 
-      // Soft background bar (top)
-      // ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
-      // ctx.fillRect(0, 0, canvas.width, 60);
-    const grad = ctx.createLinearGradient(0, 0, 0, 60);
-    grad.addColorStop(0, 'rgba(0,0,0,0.6)');
-    grad.addColorStop(1, 'rgba(0,0,0,0.0)');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, canvas.width, 60);
+      const grad = ctx.createLinearGradient(0, 0, 0, h);
+      grad.addColorStop(0, 'rgba(0,0,0,0.55)');
+      grad.addColorStop(1, 'rgba(0,0,0,0.08)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, canvas.width, h);
 
-
-
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 18px sans-serif';
+      const fontSize = Math.max(16, Math.floor(canvas.width * 0.018));
+      ctx.fillStyle = '#fff8dc';
       ctx.textBaseline = 'middle';
+      ctx.font = `bold ${fontSize}px Arial`;
 
-      // Left: Score
       ctx.textAlign = 'left';
-      ctx.fillText(`Score: ${state.score}`, padding, 30);
+      ctx.fillText(`Score: ${state.score}`, pad, h / 2);
 
-      // Center: Status
-      ctx.textAlign = 'center';
-
-      let status = '';
-      if (state.mode === 'start') {
-        status = 'Tap to Start';
-      } else if (state.mode === 'gameOver') {
-        status = 'Tap to Restart';
-      } else if (!state.banana?.landed) {
-        status = 'Incoming banana...';
-      } else if (state.player?.hasBanana) {
-        status = 'Return to Mother Orang!';
-      } else {
-        status = ripenessLabel(state.banana.age).label;
+      let ripenessText = 'airborne';
+      if (state.player?.hasBanana) {
+        ripenessText = 'secured';
+      } else if (state.banana?.landed) {
+        ripenessText = ripenessLabel(state.banana.age).label;
       }
 
-      ctx.fillText(status, canvas.width / 2, 30);
+      ctx.textAlign = 'center';
+      ctx.fillText(`Ripeness: ${ripenessText}`, canvas.width / 2, h / 2);
 
-      // Right: Lives
       ctx.textAlign = 'right';
-      ctx.fillText(`Lives: ${state.lives}`, canvas.width - padding, 30);
+      ctx.fillText(`Lives: ${state.lives}`, canvas.width - pad, h / 2);
 
       ctx.restore();
     }
@@ -711,6 +698,7 @@ const sounds = {};
       drawActors();
       drawHand();
       //drawMotherLedge();
+      drawHudOverlay();
       drawOverlay();
     }
 

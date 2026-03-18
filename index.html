@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Baby Monkey Feeding Time</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <style>
@@ -116,6 +119,32 @@ code {
     border: 0;
     box-shadow: none;
   }
+
+  canvas {
+    display: block;
+    width: 100vw;
+    width: 100dvw;
+    height: auto;
+    max-height: 100vh;
+    max-height: 100dvh;
+    border-radius: 0;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .hud,
+  .notes {
+    display: none !important;
+  }
+
+  .wrap {
+    width: 100vw;
+    width: 100dvw;
+    padding: 0;
+    gap: 0;
+    margin: 0;
+  }
+
 }
   </style>
 </head>
