@@ -82,14 +82,15 @@
         this.movedThisRound = false;
       }
 
-      update(dt) {
-        const movingInput = keys.ArrowUp || keys.ArrowDown || keys.ArrowLeft || keys.ArrowRight;
-        if (movingInput) this.movedThisRound = true;
-        this.panicking = state.troops.some(t => distance(this, t) < 105);
-        this.speed = this.panicking ? 195 : 175;
-        this.move(dt);
-      }
-
+    update(dt) {
+      const movingInput = keys.ArrowUp || keys.ArrowDown || keys.ArrowLeft || keys.ArrowRight;
+      if (movingInput) this.movedThisRound = true;
+      this.panicking = state.troops.some(t => distance(this, t) < 105);
+      this.speed = this.panicking ? 195 : 175;
+      this.move(dt);
+      updateAnim(this, dt, this.panicking ? 12 : 8);
+    }
+        
       draw() {
         ctx.save();
         ctx.translate(this.x, this.y);
