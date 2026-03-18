@@ -16,45 +16,49 @@ const sounds = {};
 
     loadSounds();
 
-    let touchStart = null;
-    let swipeHandled = false;
-    const SWIPE_THRESHOLD = 30;
+let touchStart = null;
+let swipeHandled = false;
+const SWIPE_THRESHOLD = 30;
 
-    canvas.addEventListener('touchstart', (e) => {
-      const t = e.touches[0];
+canvas.addEventListener('pointerdown', (e) => {
+  e.preventDefault();
 
-      beginGame();
+  beginGame();
 
-      touchStart = { x: t.clientX, y: t.clientY };
-      swipeHandled = false;
-    }, { passive: true });
+    touchStart = { x: e.clientX, y: e.clientY };
+    swipeHandled = false;
+  }, { passive: false });
 
-    canvas.addEventListener('touchmove', (e) => {
-      if (!touchStart || swipeHandled || !state.player) return;
+  canvas.addEventListener('pointermove', (e) => {
+    if (!touchStart || swipeHandled || !state.player) return;
 
-      const t = e.touches[0];
-      const dx = t.clientX - touchStart.x;
-      const dy = t.clientY - touchStart.y;
+    const dx = e.clientX - touchStart.x;
+    const dy = e.clientY - touchStart.y;
 
-      if (Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD) return;
+    if (Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD) return;
 
-      if (Math.abs(dx) > Math.abs(dy)) {
-        state.player.bufferedDir = dx > 0
-          ? { x: 1, y: 0 }
-          : { x: -1, y: 0 };
-      } else {
-        state.player.bufferedDir = dy > 0
-          ? { x: 0, y: 1 }
-          : { x: 0, y: -1 };
-      }
+    if (Math.abs(dx) > Math.abs(dy)) {
+      state.player.bufferedDir = dx > 0
+        ? { x: 1, y: 0 }
+        : { x: -1, y: 0 };
+    } else {
+      state.player.bufferedDir = dy > 0
+        ? { x: 0, y: 1 }
+        : { x: 0, y: -1 };
+    }
 
-      swipeHandled = true;
-    }, { passive: true });
+    swipeHandled = true;
+  }, { passive: true });
 
-    canvas.addEventListener('touchend', () => {
-      touchStart = null;
-      swipeHandled = false;
-    });
+  canvas.addEventListener('pointerup', () => {
+    touchStart = null;
+    swipeHandled = false;
+  });
+
+  canvas.addEventListener('pointercancel', () => {
+    touchStart = null;
+    swipeHandled = false;
+  });
 
     canvas.addEventListener('click', () => {
       beginGame();
@@ -70,7 +74,7 @@ const sounds = {};
     }
 
     function beginGame() {
-      if (state.mode === 'start' || state.mode === 'gameOver') {
+      if (state.mode !== 'playing') {
         startGame();
         playMusicOnce();
       }
@@ -295,6 +299,7 @@ const sounds = {};
       if (d < 26) {
         state.player.hasBanana = true;
         state.roundState = 'chase';
+        sounds.pickup?.play().catch(() => {});
         updateHud('The troop saw that. Run back to Mother Orang.');
       }
     }
@@ -372,6 +377,7 @@ const sounds = {};
           state.score += ripeness.points;
           state.hearts.push({ x: MOTHER_LEDGE.x - 10, y: MOTHER_LEDGE.y - 20, t: 0 });
           state.particles.push({ kind: 'bananaDrop', x: MOTHER_LEDGE.x - 40 + state.score * 6, y: MOTHER_LEDGE.y + 52, t: 0 });
+          sounds.score?.play().catch(() => {});
           updateHud(`Mother Orang approves. +${ripeness.points}`);
           newRound();
         }
@@ -406,6 +412,7 @@ const sounds = {};
       };
       state.player.dir = { x: 0, y: 0 };
       state.player.nextDir = { x: 0, y: 0 };
+      sounds.catch?.play().catch(() => {});
       updateHud('Monkey scream! Lil\' Jab got launched.');
     }
 
@@ -551,7 +558,7 @@ const sounds = {};
     }
 
     function drawBananaState() {
-      if (!state.banana) return;
+      if (!state.banana || state.player?.hasBanana) return;
       drawBanana(state.banana.x, state.banana.y, state.banana.size || 1);
     }
 
