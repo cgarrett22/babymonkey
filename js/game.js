@@ -8,8 +8,8 @@ const SPAWN_POS = tileCenter(SPAWN_TILE.c, SPAWN_TILE.r);
       spriteStore.troopRun = new Image();
       spriteStore.troopRun.src = 'sprites/troop-sprite.png';
     
-      spriteStore.motherOrang = new Image();
-      spriteStore.motherOrang.src = 'sprites/mother-orang.jpg';
+      //spriteStore.motherOrang = new Image();
+      //spriteStore.motherOrang.src = 'sprites/mother-orang.jpg';
     }
 
     loadSprites();
