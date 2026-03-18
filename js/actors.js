@@ -130,25 +130,26 @@
         this.decisionTimer = 0;
       }
 
-      update(dt) {
-        this.state = state.roundState === 'chase' ? 'chase' : 'wander';
-        this.speed = this.state === 'chase' ? 146 + state.score * 1.2 : 120;
-
-        if (this.atCenter()) {
-          this.snapToCenter();
-          this.decisionTimer += dt;
-          if (this.decisionTimer >= this.decisionDelay) {
-            this.pickDirection();
-            this.decisionTimer = 0;
-            this.decisionDelay = rand(0.08, 0.16);
-          } else {
-            this.dir = { x: 0, y: 0 };
+        update(dt) {
+          this.state = state.roundState === 'chase' ? 'chase' : 'wander';
+          this.speed = this.state === 'chase' ? 146 + state.score * 1.2 : 120;
+        
+          if (this.atCenter()) {
+            this.snapToCenter();
+            this.decisionTimer += dt;
+            if (this.decisionTimer >= this.decisionDelay) {
+              this.pickDirection();
+              this.decisionTimer = 0;
+              this.decisionDelay = rand(0.08, 0.16);
+            } else {
+              this.dir = { x: 0, y: 0 };
+            }
           }
+        
+          this.move(dt);
+          updateAnim(this, dt, this.state === 'chase' ? 10 : 7);
         }
-
-        this.move(dt);
-      }
-
+        
       pickDirection() {
         const dirs = [
           { x: 1, y: 0 },
