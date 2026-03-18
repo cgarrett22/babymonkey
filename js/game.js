@@ -1,5 +1,5 @@
 const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
-    const SPAWN_POS = tileCenter(SPAWN_TILE.c, SPAWN_TILE.r);
+const SPAWN_POS = tileCenter(SPAWN_TILE.c, SPAWN_TILE.r);
 
     function loadSprites() {
       spriteStore.lilJabRun = new Image();
@@ -599,13 +599,14 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
       );
     
       ctx.restore();
-    }
+    } 
+
     function loop(ts) {
       const dt = Math.min((ts - state.lastTime) / 1000, 0.05);
       state.lastTime = ts;
       update(dt || 0);
       draw();
-        loadSprites();
+      loadSprites();
       requestAnimationFrame(loop);
     }
 
