@@ -10,7 +10,7 @@ const sounds = {};
       sounds.panic = new Audio('assets/panic.mp3');
       sounds.music = new Audio('assets/jungle_jumpin.ogg');
       sounds.music.loop = true;
-      sounds.music.volume = 0.35;
+      sounds.music.volume = 0.75;
 
     }
 
