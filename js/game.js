@@ -205,7 +205,9 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
       }
     }
 
-  function updateAnim(actor, dt, fps = 8) {
+    function updateAnim(actor, dt, fps = 8) {
+      if (!actor || !actor.dir) return;
+    
       const moving = actor.dir.x !== 0 || actor.dir.y !== 0;
     
       if (!moving) {
@@ -215,14 +217,11 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
       }
     
       actor.animTime += dt;
-    
-      actor.frame =
-        Math.floor(actor.animTime * fps) %
-        actor.frameCount;
+      actor.frame = Math.floor(actor.animTime * fps) % (actor.frameCount || 4);
     }  
 
     function updatePlayer(dt) {
-      updateAnim(this, dt, this.panicking ? 12 : 8);
+      updateAnim(state.player, dt, 8);
       handleInput();
       if (state.player.atCenter() && state.player.canMove(state.player.bufferedDir)) {
         state.player.nextDir = { ...state.player.bufferedDir };
