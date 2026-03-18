@@ -490,6 +490,7 @@ const SPAWN_POS = tileCenter(SPAWN_TILE.c, SPAWN_TILE.r);
         if (p.kind === 'bananaDrop') {
           ctx.save();
           ctx.globalAlpha = 1 - p.t * 0.7;
+          ctx.globalAlpha = 1 - p.t * 0.7;
           drawBanana(p.x, p.y, 0.7);
           ctx.restore();
         }
@@ -497,6 +498,7 @@ const SPAWN_POS = tileCenter(SPAWN_TILE.c, SPAWN_TILE.r);
     }
 
     function drawActors() {
+      ctx.globalAlpha = 1;
       state.player?.draw();
       state.troops.forEach(t => t.draw());
       drawHearts();
