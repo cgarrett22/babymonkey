@@ -700,8 +700,8 @@ const sounds = {};
       drawTurnHints();
       drawBananaState();
       drawActors();
-      drawHand();
-      drawMotherLedge();
+      //drawHand();
+      //drawMotherLedge();
       drawHudOverlay();
       drawOverlay();
     }
