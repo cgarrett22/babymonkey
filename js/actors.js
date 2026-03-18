@@ -103,7 +103,7 @@
       this.panicking = state.troops.some(t => distance(this, t) < 105);
       this.speed = this.panicking ? 195 : 175;
       this.move(dt);
-      updateAnim(this, dt, this.panicking ? 12 : 8);
+      updateAnim(this, dt, this.panicking ? 8 : 6);
     }
         
       draw() {
@@ -162,7 +162,7 @@
           }
         
           this.move(dt);
-          updateAnim(this, dt, this.state === 'chase' ? 10 : 7);
+          updateAnim(this, dt, this.state === 'chase' ? 6 : 4);
         }
         
       pickDirection() {
