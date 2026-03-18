@@ -16,12 +16,6 @@ const sounds = {};
 
     loadSounds();
 
-    const grad = ctx.createLinearGradient(0, 0, 0, 60);
-    grad.addColorStop(0, 'rgba(0,0,0,0.6)');
-    grad.addColorStop(1, 'rgba(0,0,0,0.0)');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, canvas.width, 60);
-
     const line = state.mode === 'start'
       ? 'Tap to start the banana incident.'
       : 'Lil\' Jab got tossed. Tap to try again.';
@@ -153,8 +147,15 @@ const sounds = {};
       ctx.save();
 
       // Soft background bar (top)
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
-      ctx.fillRect(0, 0, canvas.width, 60);
+      // ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+      // ctx.fillRect(0, 0, canvas.width, 60);
+    const grad = ctx.createLinearGradient(0, 0, 0, 60);
+    grad.addColorStop(0, 'rgba(0,0,0,0.6)');
+    grad.addColorStop(1, 'rgba(0,0,0,0.0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, canvas.width, 60);
+
+
 
       ctx.fillStyle = '#fff';
       ctx.font = 'bold 18px sans-serif';
