@@ -95,7 +95,7 @@
         ctx.save();
         ctx.translate(this.x, this.y);
         if (spriteStore.lilJabRun) {
-          drawSpriteFrame(spriteStore.lilJabRun, this.frame, this.facing, 72, 72);
+          drawSheetFrame(spriteStore.lilJabRun, this.frame, this.facing, 64, 64, 72, 72);
         } else {
           ctx.scale(this.facing === 'left' ? -1 : 1, 1);
           ctx.fillStyle = '#b98b57';
@@ -187,7 +187,7 @@
         ctx.save();
         ctx.translate(this.x, this.y);
         if (spriteStore.troopRun) {
-          drawSpriteFrame(spriteStore.troopRun, this.frame, this.facing, 74, 74);
+          drawSheetFrame(spriteStore.troopRun, this.frame, this.facing, 64, 64, 74, 74);
         } else {
           ctx.scale(this.facing === 'left' ? -1 : 1, 1);
           ctx.fillStyle = this.color;
