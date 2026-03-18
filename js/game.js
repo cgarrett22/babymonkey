@@ -1,5 +1,71 @@
 const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
 const SPAWN_POS = tileCenter(SPAWN_TILE.c, SPAWN_TILE.r);
+const sounds = {};
+
+    function loadSounds() {
+      sounds.pickup = new Audio('assets/pickup.mp3');
+      sounds.catch = new Audio('assets/catch.mp3');
+      sounds.score = new Audio('assets/score.mp3');
+      sounds.step = new Audio('assets/step.mp3');
+      sounds.panic = new Audio('assets/panic.mp3');
+      sounds.music = new Audio('assets/jungle_jumpin.ogg');
+      sounds.music.loop = true;
+      sounds.music.volume = 0.35;
+
+    }
+
+    loadSounds();
+
+    let musicStarted = false;
+
+    function playMusicOnce() {
+      if (musicStarted || !sounds.music) return;
+      musicStarted = true;
+      sounds.music.play().catch(() => {});
+    }
+
+    canvas.addEventListener('touchstart', () => {
+      Object.values(sounds).forEach(s => s.play().then(() => s.pause()).catch(() => {}));
+    }, { once: true });
+
+    let touchStart = null;
+    let swipeHandled = false;
+
+    const SWIPE_THRESHOLD = 30; // pixels
+
+    canvas.addEventListener('touchstart', (e) => {
+      const t = e.touches[0];
+      touchStart = { x: t.clientX, y: t.clientY };
+      swipeHandled = false;
+    }, { passive: true });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (!touchStart || swipeHandled) return;
+
+      const t = e.touches[0];
+      const dx = t.clientX - touchStart.x;
+      const dy = t.clientY - touchStart.y;
+
+      // Ignore tiny movements
+      if (Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD) return;
+
+      if (Math.abs(dx) > Math.abs(dy)) {
+        state.player.bufferedDir = dx > 0
+          ? { x: 1, y: 0 }
+          : { x: -1, y: 0 };
+      } else {
+        state.player.bufferedDir = dy > 0
+          ? { x: 0, y: 1 }
+          : { x: 0, y: -1 };
+      }
+
+      swipeHandled = true; // Only allow one direction per swipe
+    }, { passive: true });
+
+    canvas.addEventListener('touchend', () => {
+      touchStart = null;
+      swipeHandled = false;
+    });
 
     function loadSprites() {
       spriteStore.lilJabRun = new Image();
