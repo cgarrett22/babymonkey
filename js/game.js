@@ -526,9 +526,9 @@ const SPAWN_POS = tileCenter(SPAWN_TILE.c, SPAWN_TILE.r);
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawBackground();
-      // drawPathGuide();
       // drawCaveDebug();
-      // drawPathsOverlay();
+      drawPathGuide();
+      drawPathsOverlay();
       drawCaveHints();
       drawTurnHints();
       drawBananaState();
