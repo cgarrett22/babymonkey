@@ -229,7 +229,7 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
       }
     
       state.player.update(dt);
-      updateAnim(state.player, dt, 8);
+      //updateAnim(state.player, dt, 8);
     
       if (state.player.movedThisRound && state.roundState === 'waiting' && state.banana?.landed) {
         state.roundState = 'chase';
@@ -252,7 +252,7 @@ const MOTHER_LEDGE = { x: canvas.width - 120, y: 112 };
     function updateTroops(dt) {
       state.troops.forEach(t => {
         t.update(dt);
-        updateAnim(t, dt, 9);
+        //updateAnim(t, dt, 9);
       });
     
       if (state.catchAnim) return;
