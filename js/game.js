@@ -16,37 +16,26 @@ const sounds = {};
 
     loadSounds();
 
-    let musicStarted = false;
-
-    function playMusicOnce() {
-      if (musicStarted || !sounds.music) return;
-      musicStarted = true;
-      sounds.music.play().catch(() => {});
-    }
-
-    canvas.addEventListener('touchstart', () => {
-      Object.values(sounds).forEach(s => s.play().then(() => s.pause()).catch(() => {}));
-    }, { once: true });
-
     let touchStart = null;
     let swipeHandled = false;
-
-    const SWIPE_THRESHOLD = 30; // pixels
+    const SWIPE_THRESHOLD = 30;
 
     canvas.addEventListener('touchstart', (e) => {
       const t = e.touches[0];
+
+      beginGame();
+
       touchStart = { x: t.clientX, y: t.clientY };
       swipeHandled = false;
     }, { passive: true });
 
     canvas.addEventListener('touchmove', (e) => {
-      if (!touchStart || swipeHandled) return;
+      if (!touchStart || swipeHandled || !state.player) return;
 
       const t = e.touches[0];
       const dx = t.clientX - touchStart.x;
       const dy = t.clientY - touchStart.y;
 
-      // Ignore tiny movements
       if (Math.abs(dx) < SWIPE_THRESHOLD && Math.abs(dy) < SWIPE_THRESHOLD) return;
 
       if (Math.abs(dx) > Math.abs(dy)) {
@@ -59,13 +48,34 @@ const sounds = {};
           : { x: 0, y: -1 };
       }
 
-      swipeHandled = true; // Only allow one direction per swipe
+      swipeHandled = true;
     }, { passive: true });
 
     canvas.addEventListener('touchend', () => {
       touchStart = null;
       swipeHandled = false;
     });
+
+    canvas.addEventListener('click', () => {
+      beginGame();
+    });
+
+    let musicStarted = false;
+
+    function playMusicOnce() {
+      if (musicStarted || !sounds.music) return;
+      musicStarted = true;
+      sounds.music.currentTime = 0;
+      sounds.music.play().catch(() => {});
+    }
+
+    function beginGame() {
+      if (state.mode === 'start' || state.mode === 'gameOver') {
+        startGame();
+        playMusicOnce();
+      }
+    }
+
 
     function loadSprites() {
       spriteStore.lilJabRun = new Image();
@@ -718,7 +728,7 @@ const sounds = {};
         e.preventDefault();
       }
       if (e.code === 'Space') {
-        if (state.mode === 'start' || state.mode === 'gameOver') startGame();
+        beginGame();
       }
     });
 
