@@ -89,6 +89,7 @@
         if (this.dir.y < 0) this.facing = 'up';
       }
     }
+        
     class Player extends Actor {
       constructor(x, y) {
         super(x, y, 175);
