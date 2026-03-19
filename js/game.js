@@ -278,11 +278,11 @@ const sounds = {};
       }
     }
 
-    function ripenessLabel(age) {
-      if (age >= 9) return { label: 'golden', points: 3, color: '#f59e0b' };
-      if (age >= 5) return { label: 'yellow', points: 2, color: '#fde047' };
-      return { label: 'green', points: 1, color: '#84cc16' };
-    }
+function ripenessLabel(age) {
+  if (age >= 9) return { label: 'golden', points: 3, color: '#facc15' }; // bright gold
+  if (age >= 5) return { label: 'yellow', points: 2, color: '#fde047' };
+  return { label: 'green', points: 1, color: '#4ade80' }; // brighter green
+}
 
     function handleInput() {
       if (!state.player) return;
@@ -345,7 +345,7 @@ const sounds = {};
     function updateBanana(dt) {
       if (!state.banana || !state.banana.landed || state.player?.hasBanana) return;
       state.banana.age += dt;
-      state.banana.size = 1 + Math.sin(state.banana.age * 4) * 0.04;
+      state.banana.size = 1 + Math.sin(state.banana.age * 5) * 0.08;
       const d = distance(state.player, state.banana);
       if (d < 26) {
         state.player.hasBanana = true;
@@ -592,21 +592,56 @@ const sounds = {};
       ctx.restore();
     }
 
-    function drawBanana(x, y, scale = 1) {
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.scale(scale, scale);
-      ctx.fillStyle = state.banana ? ripenessLabel(state.banana.age).color : '#fde047';
-      ctx.beginPath();
-      ctx.moveTo(-12, 5);
-      ctx.quadraticCurveTo(2, -18, 18, -4);
-      ctx.quadraticCurveTo(0, 8, -12, 5);
-      ctx.fill();
-      ctx.strokeStyle = '#a16207';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      ctx.restore();
-    }
+function drawBanana(x, y, scale = 1) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(scale, scale);
+
+  const ripeness = state.banana ? ripenessLabel(state.banana.age) : null;
+
+  // Glow (makes it visible on ground)
+  if (ripeness) {
+    ctx.globalAlpha = 0.35;
+    ctx.fillStyle = ripeness.color;
+    ctx.beginPath();
+    ctx.arc(0, 0, 22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+
+  // Main banana
+  ctx.fillStyle = ripeness?.color || '#fde047';
+  ctx.beginPath();
+  ctx.moveTo(-14, 6);
+  ctx.quadraticCurveTo(4, -20, 20, -6);
+  ctx.quadraticCurveTo(2, 10, -14, 6);
+  ctx.fill();
+
+  // Outline
+  ctx.strokeStyle = '#78350f';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // Highlight
+  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(-6, 0);
+  ctx.quadraticCurveTo(6, -10, 14, -4);
+  ctx.stroke();
+
+  // shadow
+ctx.fillStyle = 'rgba(0,0,0,0.25)';
+ctx.beginPath();
+ctx.ellipse(2, 12, 14, 6, 0, 0, Math.PI * 2);
+ctx.fill();
+
+  // Stem
+  ctx.fillStyle = '#3f2f1c';
+  ctx.fillRect(16, -8, 4, 4);
+
+  ctx.restore();
+}
 
     function drawBananaState() {
       if (!state.banana || state.player?.hasBanana) return;
