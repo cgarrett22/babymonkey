@@ -26,9 +26,9 @@ const sounds = {};
 
     window.addEventListener('resize', sizeApp);
     window.addEventListener('orientationchange', sizeApp);
-    sizeApp();    
+    sizeApp();
 
-      
+
     let touchStart = null;
     let swipeHandled = false;
     const SWIPE_THRESHOLD = 24;
@@ -94,6 +94,12 @@ const sounds = {};
       }
     }
 
+    function checkAcceptanceUnlock() {
+      if (state.acceptance >= state.nextAcceptanceUnlock) {
+        unlockJournalPage();
+        state.nextAcceptanceUnlock += 10;
+      }
+    }
 
     function loadSprites() {
       spriteStore.lilJabRun = new Image();
@@ -215,19 +221,38 @@ const sounds = {};
       if (!z) return;
 
       z.time += dt;
+      z.timer -= dt;
 
       if (z.anim === 'react') {
-        if (z.time < 0.85) z.frame = 1;
-        else if (z.time < 1.5) z.frame = 2;
-        else if (z.time < 0.8) z.frame = 3;
+        if (z.time < 0.25) z.frame = 1;
+        else if (z.time < 1.2) z.frame = 2;
+        else if (z.time < 0.9) z.frame = 3;
         else {
           z.anim = 'idle';
           z.frame = 0;
           z.time = 0;
+          z.timer = rand(2.5, 6);
         }
+        return;
+      }
+
+      // idle ambient pop-up
+      if (z.timer <= 0) {
+        z.anim = 'react';
+        z.frame = 1;
+        z.time = 0;
       } else {
         z.frame = 0;
       }
+    }
+
+    function triggerZookeeper2(type = 'react') {
+      if (!state.zookeeper2) return;
+      if (state.zookeeper2.anim !== 'idle') return;
+
+      state.zookeeper2.anim = type;
+      state.zookeeper2.frame = 1;
+      state.zookeeper2.time = 0;
     }
 
     function drawPathGuide() {
@@ -262,7 +287,7 @@ const sounds = {};
       }
 
       ctx.restore();
-    } 
+    }
 
 
     function drawHudOverlay() {
@@ -280,11 +305,15 @@ const sounds = {};
       const fontSize = Math.max(16, Math.floor(canvas.width * 0.018));
       ctx.fillStyle = '#fff8dc';
       ctx.textBaseline = 'middle';
-      ctx.font = `bold ${fontSize}px Arial`;
+      ctx.font = `${Math.floor(fontSize * 0.8)}px Arial`;
+      ctx.fillStyle = '#c8ffd8'; // soft green tone
 
       ctx.textAlign = 'left';
-      ctx.fillText(`Score: ${state.score}`, pad, h / 2);
-
+      ctx.fillText(
+        `Score: ${state.score}   Acceptance: ${state.acceptance ?? 0}`,
+        pad,
+        h / 2
+      );
       let ripenessText = 'airborne';
       if (state.player?.hasBanana) {
         ripenessText = 'secured';
@@ -297,6 +326,9 @@ const sounds = {};
 
       ctx.textAlign = 'right';
       ctx.fillText(`Lives: ${state.lives}`, canvas.width - pad, h / 2);
+
+      const near = (state.acceptance % 10) >= 8;
+      ctx.fillStyle = near ? '#aaffaa' : '#c8ffd8';
 
       ctx.restore();
     }
@@ -311,18 +343,41 @@ const sounds = {};
       );
     }
 
+    function addAcceptance(amount) {
+      state.acceptance = Math.max(0, (state.acceptance || 0) + amount);
+      checkAcceptanceUnlock();
+    }
+
+    function checkAcceptanceUnlock() {
+      if ((state.acceptance || 0) >= (state.nextAcceptanceUnlock || 10)) {
+        // placeholder reward for now
+        state.nextAcceptanceUnlock += 10;
+        updateHud('Journal page unlocked!');
+      }
+    }
+
     function startGame() {
       state.mode = 'playing';
       state.score = 0;
+      const near = (state.acceptance % 10) >= 8;
+      ctx.fillStyle = near ? '#aaffaa' : '#c8ffd8';
       state.lives = 3;
       state.hearts = [];
       state.particles = [];
       state.catchAnim = null;
       state.zookeeper = { anim: 'idle', frame: 0, time: 0, didThrowSound: false };
       state.zookeeper2 = { anim: 'idle', frame: 0, time: 0 };
+      state.acceptance = 0;
+      state.nextAcceptanceUnlock = 10;
       resetActors();
       newRound();
       updateHud('Lil\' Jab is waiting for the toss.');
+      state.zookeeper2 = {
+        anim: 'idle',
+        frame: 0,
+        time: 0,
+        timer: rand(2.5, 6)
+      };
     }
 
     function newRound() {
@@ -341,7 +396,7 @@ const sounds = {};
       state.troops.forEach((t, i) => {
         const p = tileCenter(TROOP_SPAWN_TILES[i].c, TROOP_SPAWN_TILES[i].r);
         t.frame = 0;
-        t.animTime = 0;  
+        t.animTime = 0;
         t.x = p.x;
         t.y = p.y;
         t.dir = { x: 0, y: 0 };
@@ -474,60 +529,61 @@ function ripenessLabel(age) {
         state.player.hasBanana = true;
         state.roundState = 'chase';
         sounds.pickup?.play().catch(() => {});
+        triggerZookeeper2('react');
         updateHud('The troop saw that. Run back to Mother Orang.');
       }
     }
 
 //    function updateAnim(actor, dt, fps = 8) {
 //      if (!actor || !actor.dir) return;
-    
+
 //      const moving = actor.dir.x !== 0 || actor.dir.y !== 0;
-    
+
 //      if (!moving) {
 //        actor.frame = 0;
         //actor.animTime = 0;
 //        return;
 //      }
-    
+
 //      actor.animTime += dt;
 //      actor.frame = Math.floor(actor.animTime * fps) % (actor.frameCount || 4);
-//    }  
+//    }
 
 
     function updateAnim(actor, dt, fps = 12) {
       if (!actor || !actor.dir) return;
-    
+
       const moving = actor.dir.x !== 0 || actor.dir.y !== 0;
-    
+
       if (!moving) {
         actor.frame = 0;
         actor.animTime = 0;
         return;
       }
-    
+
       actor.animTime += dt;
       actor.frame = Math.floor(actor.animTime * fps) % (actor.frameCount || 4);
     }
 
     function updatePlayer(dt) {
       if (!state.player) return;
-    
+
       handleInput();
 
       const dir = state.player.dir;
       const buf = state.player.bufferedDir;
-        
+
       const isReverse =
         (dir.x !== 0 && buf.x === -dir.x) ||
         (dir.y !== 0 && buf.y === -dir.y);
-    
+
       if (isReverse) {
         state.player.dir = { ...buf };
         state.player.nextDir = { ...buf };
       } else if (state.player.canMove(buf)) {
         state.player.nextDir = { ...buf };
       }
-        
+
       //if (state.player.atCenter() && state.player.canMove(state.player.bufferedDir)) {
         //state.player.nextDir = { ...state.player.bufferedDir };
       //}
@@ -535,23 +591,25 @@ function ripenessLabel(age) {
       if (state.player.canMove(state.player.bufferedDir)) {
         state.player.nextDir = { ...state.player.bufferedDir };
       }
-        
+
       state.player.update(dt);
       //updateAnim(state.player, dt, 8);
-    
+
       if (state.player.movedThisRound && state.roundState === 'waiting' && state.banana?.landed) {
         state.roundState = 'chase';
       }
-    
+
       if (state.player.hasBanana) {
         const dx = state.player.x - SPAWN_POS.x;
         const dy = state.player.y - SPAWN_POS.y;
         if (Math.hypot(dx, dy) < 50) {
           const ripeness = ripenessLabel(state.banana.age);
           state.score += ripeness.points;
+          addAcceptance(1);
           state.hearts.push({ x: MOTHER_LEDGE.x - 10, y: MOTHER_LEDGE.y - 20, t: 0 });
           state.particles.push({ kind: 'bananaDrop', x: MOTHER_LEDGE.x - 40 + state.score * 6, y: MOTHER_LEDGE.y + 52, t: 0 });
           sounds.score?.play().catch(() => {});
+          triggerZookeeper2('react');
           updateHud(`Mother Orang approves. +${ripeness.points}`);
           newRound();
         }
@@ -563,9 +621,9 @@ function ripenessLabel(age) {
         t.update(dt);
         //updateAnim(t, dt, 9);
       });
-    
+
       if (state.catchAnim) return;
-    
+
       for (const troop of state.troops) {
         if (distance(state.player, troop) < 34) {
           startCatch(troop);
@@ -586,7 +644,8 @@ function ripenessLabel(age) {
       };
       state.player.dir = { x: 0, y: 0 };
       state.player.nextDir = { x: 0, y: 0 };
-      startReact();
+      addAcceptance(-1);
+      triggerZookeeper2('react');
       sounds.catch?.play().catch(() => {});
       updateHud('Monkey scream! Lil\' Jab got launched.');
     }
@@ -603,8 +662,16 @@ function ripenessLabel(age) {
       state.player.facing = t < 0.5 ? 'left' : 'right';
       if (t >= 1) {
         state.lives -= 1;
+
         if (state.lives <= 0) {
           state.mode = 'gameOver';
+
+          if (sounds.music) {
+            sounds.music.pause();
+            sounds.music.currentTime = 0;
+          }
+          musicStarted = false;
+
           updateHud();
         } else {
           newRound();
@@ -622,14 +689,14 @@ function ripenessLabel(age) {
 
     function update(dt) {
       if (state.mode !== 'playing') return;
-    
+
       updateHand(dt);
       updateBanana(dt);
-    
+
       if (!state.catchAnim) {
         updatePlayer(dt);
       }
-    
+
       if (state.player) {
         updateTroops(dt);
       }
@@ -642,10 +709,46 @@ function ripenessLabel(age) {
       updateHud();
     }
 
+    function drawCaveEyes() {
+      const t = performance.now() * 0.004;
+
+      CAVES.forEach((cave, i) => {
+        const p = tileCenter(cave.c, cave.r);
+        const off = cave.eyeOffset || { x: 0, y: 0 };
+
+        const ex = p.x + off.x;
+        const ey = p.y + off.y;
+        // occasional blink
+        const blink = Math.sin(t + i * 1.7) > 0.92;
+        const eyeR = blink ? 1 : 2.5;
+
+        ctx.save();
+        ctx.globalAlpha = 0.75;
+
+        // tiny glow
+        ctx.fillStyle = 'rgba(255, 255, 210, 0.18)';
+        ctx.beginPath();
+        // ctx.arc(p.x - 5, p.y - 2, 6, 0, Math.PI * 2);
+        // ctx.arc(p.x + 5, p.y - 2, 6, 0, Math.PI * 2);
+        ctx.arc(ex - 5, ey - 2, 6, 0, Math.PI * 2);
+        ctx.arc(ex + 5, ey - 2, 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        // eyes
+        ctx.fillStyle = '#fffbe6';
+        ctx.beginPath();
+        ctx.arc(p.x - 5, p.y - 42, eyeR, 0, Math.PI * 2);
+        ctx.arc(p.x + 5, p.y - 42, eyeR, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.restore();
+      });
+    }
+
     function drawBackground() {
       ctx.drawImage(mountainImage, 0, 0, canvas.width, canvas.height);
     }
-    
+
     function drawRockTile(x, y) {
       ctx.fillStyle = '#8d745c';
       ctx.fillRect(x, y, TILE, TILE);
@@ -719,56 +822,80 @@ function ripenessLabel(age) {
       ctx.restore();
     }
 
-function drawBanana(x, y, scale = 1) {
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.scale(scale, scale);
 
-  const ripeness = state.banana ? ripenessLabel(state.banana.age) : null;
+    function drawSparkle(x, y, size = 4) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.strokeStyle = '#fffdf0';
+      ctx.lineWidth = 1.5;
 
-  // Glow (makes it visible on ground)
-  if (ripeness) {
-    ctx.globalAlpha = 0.35;
-    ctx.fillStyle = ripeness.color;
+      ctx.beginPath();
+      ctx.moveTo(-size, 0);
+      ctx.lineTo(size, 0);
+      ctx.moveTo(0, -size);
+      ctx.lineTo(0, size);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    function drawBanana(x, y, scale = 1) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(scale, scale);
+
+      const ripeness = state.banana ? ripenessLabel(state.banana.age) : null;
+
+      // Glow (makes it visible on ground)
+      if (ripeness) {
+        ctx.globalAlpha = 0.35;
+        ctx.fillStyle = ripeness.color;
+        ctx.beginPath();
+        ctx.arc(0, 0, 22, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+
+      // Main banana
+      ctx.fillStyle = ripeness?.color || '#fde047';
+      ctx.beginPath();
+      ctx.moveTo(-14, 6);
+      ctx.quadraticCurveTo(4, -20, 20, -6);
+      ctx.quadraticCurveTo(2, 10, -14, 6);
+      ctx.fill();
+
+      // Outline
+      ctx.strokeStyle = '#78350f';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Highlight
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(-6, 0);
+      ctx.quadraticCurveTo(6, -10, 14, -4);
+      ctx.stroke();
+
+      // shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
     ctx.beginPath();
-    ctx.arc(0, 0, 22, 0, Math.PI * 2);
+    ctx.ellipse(2, 12, 14, 6, 0, 0, Math.PI * 2);
     ctx.fill();
-    ctx.globalAlpha = 1;
-  }
 
-  // Main banana
-  ctx.fillStyle = ripeness?.color || '#fde047';
-  ctx.beginPath();
-  ctx.moveTo(-14, 6);
-  ctx.quadraticCurveTo(4, -20, 20, -6);
-  ctx.quadraticCurveTo(2, 10, -14, 6);
-  ctx.fill();
+      // Stem
+      ctx.fillStyle = '#3f2f1c';
+      ctx.fillRect(16, -8, 4, 4);
 
-  // Outline
-  ctx.strokeStyle = '#78350f';
-  ctx.lineWidth = 2;
-  ctx.stroke();
+      // if (state.banana && ripenessLabel(state.banana.age).label === 'golden') {
+      //   const tt = performance.now() * 0.006;
+      //   drawSparkle(Math.cos(tt) * 11, Math.sin(tt) * 8, 3);
+      //   drawSparkle(Math.cos(tt + 2.2) * 9, Math.sin(tt + 2.2) * 7, 2.5);
+      //   drawSparkle(Math.cos(tt + 4.4) * 10, Math.sin(tt + 4.4) * 9, 2);
+      // }
 
-  // Highlight
-  ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-  ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  ctx.moveTo(-6, 0);
-  ctx.quadraticCurveTo(6, -10, 14, -4);
-  ctx.stroke();
-
-  // shadow
-ctx.fillStyle = 'rgba(0,0,0,0.25)';
-ctx.beginPath();
-ctx.ellipse(2, 12, 14, 6, 0, 0, Math.PI * 2);
-ctx.fill();
-
-  // Stem
-  ctx.fillStyle = '#3f2f1c';
-  ctx.fillRect(16, -8, 4, 4);
-
-  ctx.restore();
-}
+      ctx.restore();
+    }
 
     function drawBananaState() {
       if (!state.banana || state.player?.hasBanana) return;
@@ -858,6 +985,7 @@ ctx.fill();
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       drawBackground();
+      drawCaveEyes();
       drawCaveHints();
       drawTurnHints();
       drawBananaState();
@@ -904,20 +1032,20 @@ ctx.fill();
       if (facing === 'up') return 2;
       return 0;
     }
-    
+
     function drawSheetFrame(img, frame, facing, frameWidth, frameHeight, drawWidth, drawHeight) {
       if (!img || !img.complete) return;
-    
+
       const row = getDirRow(facing);
       const sx = frame * frameWidth;
       const sy = row * frameHeight;
-    
+
       ctx.save();
-    
+
       if (facing === 'right') {
         ctx.scale(-1, 1);
       }
-    
+
       ctx.drawImage(
         img,
         sx,
@@ -929,9 +1057,9 @@ ctx.fill();
         drawWidth,
         drawHeight
       );
-    
+
       ctx.restore();
-    } 
+    }
 
     function loop(ts) {
       const dt = Math.min((ts - state.lastTime) / 1000, 0.05);

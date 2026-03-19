@@ -10,7 +10,10 @@
       hearts: [],
       particles: [],
       catchAnim: null,
-      lastTime: 0
+      lastTime: 0,
+      acceptance: 0,
+      nextAcceptanceUnlock: 10,
+      journalPages: []
     };
 
     const keys = { ArrowUp: false, ArrowDown: false, ArrowLeft: false, ArrowRight: false };
