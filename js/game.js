@@ -98,21 +98,137 @@ const sounds = {};
     function loadSprites() {
       spriteStore.lilJabRun = new Image();
       spriteStore.lilJabRun.src = 'sprites/jab-sprite.png';
-    
+
       spriteStore.troopRun = new Image();
       spriteStore.troopRun.src = 'sprites/troop-sprite.png';
-    
-      //spriteStore.motherOrang = new Image();
-      //spriteStore.motherOrang.src = 'sprites/mother-orang.jpg';
+
+      spriteStore.zookeeper1 = new Image();
+      spriteStore.zookeeper1.src = 'sprites/zookeeper-1.png';
+
+      spriteStore.zookeeper2 = new Image();
+      spriteStore.zookeeper2.src = 'sprites/zookeeper-2.png';
     }
 
     loadSprites();
+
     setTimeout(() => {
-      console.log('jab src:', spriteStore.lilJabRun?.src);
       console.log('jab loaded:', spriteStore.lilJabRun?.complete);
       console.log('troop loaded:', spriteStore.troopRun?.complete);
-      console.log('mother loaded:', spriteStore.motherOrang?.complete);
+      console.log('zookeeper1 loaded:', spriteStore.zookeeper1?.complete);
     }, 1000);
+
+    const ZOOKEEPER_FRAMES = 4;
+    const ZOOKEEPER2_FRAMES = 4;
+
+    function drawZookeeper() {
+      const z = state.zookeeper;
+      if (!z || !spriteStore.zookeeper1?.complete) return;
+
+      const frame = z.frame || 0;
+      const frameWidth = spriteStore.zookeeper1.width / ZOOKEEPER_FRAMES;
+      const sx = frame * frameWidth;
+      const sy = 0;
+
+      let dx = 17;
+      let dy = 118;
+
+      //if (z.frame === 1) dx += 4;
+      //if (z.frame === 2) dx += 2;
+
+      ctx.drawImage(
+        spriteStore.zookeeper1,
+        sx, sy,
+        frameWidth, spriteStore.zookeeper1.height,
+        dx, dy,
+        96, 96
+      );
+    }
+
+
+    function startThrow() {
+      state.zookeeper = {
+        anim: 'throw',
+        frame: 1,
+        time: 0,
+        didThrowSound: false
+      };
+    }
+
+    function startReact() {
+      state.zookeeper2 = {
+        anim: 'react',
+        frame: 1,
+        time: 0
+      };
+    }
+
+    function updateZookeeper(dt) {
+      const z = state.zookeeper;
+      if (!z) return;
+
+      z.time += dt;
+
+      if (z.anim === 'throw') {
+        if (z.time < 0.15) z.frame = 0;
+        else if (z.time < 0.3) z.frame = 1;
+        else if (z.time < 0.5) z.frame = 2;
+        else {
+          z.anim = 'idle';
+          z.frame = 0;
+          z.time = 0;
+          z.didThrowSound = false;
+        }
+
+        if (z.frame === 1 && !z.didThrowSound) {
+          sounds.step?.play().catch(() => {});
+          z.didThrowSound = true;
+        }
+      }
+    }
+
+    function drawZookeeper2() {
+      const z = state.zookeeper2;
+      if (!z || !spriteStore.zookeeper2?.complete) return;
+
+      const frame = z.frame || 0;
+      const frameWidth = spriteStore.zookeeper2.width / ZOOKEEPER2_FRAMES;
+      const sx = frame * frameWidth;
+      const sy = 0;
+
+      let dx = 700;
+      let dy = 150;
+
+      //if (z.frame === 1) dx += 4;
+      //if (z.frame === 2) dx += 2;
+
+      ctx.drawImage(
+        spriteStore.zookeeper2,
+        sx, sy,
+        frameWidth, spriteStore.zookeeper2.height,
+        dx, dy,
+        96, 96
+      );
+    }
+
+    function updateZookeeper2(dt) {
+      const z = state.zookeeper2;
+      if (!z) return;
+
+      z.time += dt;
+
+      if (z.anim === 'react') {
+        if (z.time < 0.85) z.frame = 1;
+        else if (z.time < 1.5) z.frame = 2;
+        else if (z.time < 0.8) z.frame = 3;
+        else {
+          z.anim = 'idle';
+          z.frame = 0;
+          z.time = 0;
+        }
+      } else {
+        z.frame = 0;
+      }
+    }
 
     function drawPathGuide() {
       ctx.save();
@@ -202,6 +318,8 @@ const sounds = {};
       state.hearts = [];
       state.particles = [];
       state.catchAnim = null;
+      state.zookeeper = { anim: 'idle', frame: 0, time: 0, didThrowSound: false };
+      state.zookeeper2 = { anim: 'idle', frame: 0, time: 0 };
       resetActors();
       newRound();
       updateHud('Lil\' Jab is waiting for the toss.');
@@ -236,6 +354,11 @@ const sounds = {};
     function tossBanana() {
       const targetTile = choose(BANANA_SPAWNS);
       const to = tileCenter(targetTile.c, targetTile.r);
+      state.zookeeper = {
+        anim: 'throw',
+        frame: 0,
+        time: 0
+      };
       state.banana = {
         x: to.x,
         y: to.y,
@@ -463,6 +586,7 @@ function ripenessLabel(age) {
       };
       state.player.dir = { x: 0, y: 0 };
       state.player.nextDir = { x: 0, y: 0 };
+      startReact();
       sounds.catch?.play().catch(() => {});
       updateHud('Monkey scream! Lil\' Jab got launched.');
     }
@@ -509,7 +633,10 @@ function ripenessLabel(age) {
       if (state.player) {
         updateTroops(dt);
       }
-    
+
+      updateZookeeper(dt);
+      updateZookeeper2(dt);
+
       updateCatch(dt);
       updateParticles(dt);
       updateHud();
@@ -716,10 +843,10 @@ ctx.fill();
       ctx.fillStyle = '#fff8dc';
       ctx.textAlign = 'center';
       ctx.font = 'bold 44px Arial';
-      ctx.fillText('Baby Monkey Feeding Time', canvas.width / 2, canvas.height / 2 - 40);
+      ctx.fillText('Monkey Mountain Madness', canvas.width / 2, canvas.height / 2 - 40);
       ctx.font = '20px Arial';
       const line = state.mode === 'start'
-        ? 'Tap to start the banana incident.'
+        ? 'Tap or use spacebar to start the Banana Banzai!'
         : 'Lil\' Jab was tossed too many times. Tap to try again.';
         ctx.fillText(line, canvas.width / 2, canvas.height / 2 + 8);
       ctx.font = '16px Arial';
@@ -735,6 +862,8 @@ ctx.fill();
       drawTurnHints();
       drawBananaState();
       drawActors();
+      drawZookeeper();
+      drawZookeeper2();
       //drawHand();
       //drawMotherLedge();
       drawHudOverlay();
