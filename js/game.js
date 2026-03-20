@@ -984,7 +984,7 @@ function ripenessLabel(age) {
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      //drawBackground();
+      drawBackground();
       //drawCaveEyes();
       drawCaveHints();
       drawTurnHints();
