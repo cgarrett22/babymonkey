@@ -994,8 +994,8 @@ function ripenessLabel(age) {
   //    drawZookeeper2();
       //drawHand();
       //drawMotherLedge();
-  //    drawHudOverlay();
- //     drawOverlay();
+      drawHudOverlay();
+      drawOverlay();
     }
 
     function drawCaveHints() {
