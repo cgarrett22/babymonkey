@@ -984,18 +984,18 @@ function ripenessLabel(age) {
 
     function draw() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawBackground();
-      drawCaveEyes();
+      //drawBackground();
+      //drawCaveEyes();
       drawCaveHints();
       drawTurnHints();
-      drawBananaState();
-      drawActors();
-      drawZookeeper();
-      drawZookeeper2();
+     // drawBananaState();
+   //   drawActors();
+  //    drawZookeeper();
+  //    drawZookeeper2();
       //drawHand();
       //drawMotherLedge();
-      drawHudOverlay();
-      drawOverlay();
+  //    drawHudOverlay();
+ //     drawOverlay();
     }
 
     function drawCaveHints() {
